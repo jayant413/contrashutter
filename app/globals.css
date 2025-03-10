@@ -1,0 +1,100 @@
+/* Base Tailwind Imports */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 10px; /* Width of the scrollbar */
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--hover-white); /* Background of the scrollbar track */
+  border-radius: var(--radius); /* Rounded corners for the track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: gray;
+  border-radius: var(--radius); /* Rounded corners for the thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: gray;
+}
+
+/* Root Variables */
+@layer base {
+  :root {
+    --radius: 0.5rem;
+    --dark-bg: #042b3a;
+    --accent-orange: #f66a0a;
+    --hover-gray: #625f5e;
+    --text-white: #ffffff;
+  }
+}
+
+/* Section Headline */
+.headline {
+  background-color: var(--dark-bg); /* Dark Background */
+  color: var(--accent-orange); /* Orange Text */
+  font-size: 2.2rem;
+  font-weight: bold;
+  padding: 1rem 2rem;
+  border-radius: var(--radius);
+  text-transform: uppercase;
+  margin: 1rem auto;
+  max-width: 1200px;
+  text-align: center;
+}
+
+/* Grid Container for Images */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem; /* Adjust spacing between items */
+  margin-top: 1.5rem;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Image Styling */
+.image-style {
+  border-radius: var(--radius);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.image-style:hover {
+  transform: scale(1.05); /* Slight zoom effect */
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Section Container Styling */
+.section-container {
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background-color: var(--text-white);
+  border: 1px solid var(--dark-bg);
+  border-radius: var(--radius);
+  max-width: 90%;
+}
+
+/* Box Styling for Buttons */
+.box1 {
+  background-color: var(--dark-bg);
+  border: 2px solid var(--accent-orange);
+  padding: 1.25rem;
+  border-radius: var(--radius);
+  color: var(--accent-orange);
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.box1:hover {
+  background-color: var(--hover-gray);
+  color: var(--dark-bg);
+}
