@@ -10,7 +10,11 @@ const nextConfig = {
         protocol: "https",
         hostname: "github.com",
       },
-    ], // Allow images from localhost and github.com
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com", // Added Unsplash hostname
+      },
+    ], // Allow images from localhost, github.com, and images.unsplash.com
   },
 };
 

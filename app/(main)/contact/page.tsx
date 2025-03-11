@@ -34,12 +34,12 @@ const Contact = () => {
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
-      first_name: "John",
-      last_name: "Doe",
-      phone: "1234567890",
-      email: "john.doe@example.com",
-      subject: "Hello",
-      message: "This is a test message.",
+      first_name: "",
+      last_name: "",
+      phone: "",
+      email: "",
+      subject: "",
+      message: "",
     },
   });
 
@@ -64,15 +64,14 @@ const Contact = () => {
   return (
     <div
       id="contact"
-      className="flex py-[3em] justify-center  bg-gray-100 h-screen"
+      className="flex py-12 justify-center bg-gray-100 min-h-screen"
     >
-      <div className="w-[45vw] p-[2em] bg-white rounded-lg shadow-md  h-fit">
+      <div className="w-full max-w-lg p-8 h-fit bg-white rounded-lg shadow-lg">
+        <h2 className="text-3xl font-bold text-center text-primaryBlue mb-6">
+          Contact Us
+        </h2>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="text-2xl font-bold text-primaryBlue cursor-default">
-              Contact Us
-            </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 name="first_name"
@@ -167,11 +166,11 @@ const Contact = () => {
               )}
             />
 
-            <div className="w-full flex justify-end ">
+            <div className="w-full flex justify-end">
               <Button
                 type="submit"
                 disabled={isPending}
-                className="bg-gradient-to-br from-primaryBlue to-primaryBlue hover:opacity-90 text-white"
+                className="bg-gradient-to-br from-primaryBlue to-primaryBlue hover:opacity-90 text-white py-2 px-4 rounded-lg transition duration-200"
               >
                 {isPending ? (
                   <>
