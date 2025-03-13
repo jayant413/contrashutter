@@ -74,11 +74,13 @@ export function FormDetails({ form, formFields, formTitle }: FormDetailsProps) {
                   <FormItem>
                     <FormLabel>{field.label}</FormLabel>
                     <FormControl>
-                      <Textarea
-                        {...formField}
-                        required={field.required}
-                        placeholder={field.label}
-                      />{" "}
+                      {field.component === "textarea" && (
+                        <Textarea
+                          {...formField}
+                          required={field.required}
+                          placeholder={field.label}
+                        />
+                      )}
                     </FormControl>
                     <FormMessage />
                   </FormItem>
