@@ -65,7 +65,7 @@ const Support = () => {
   };
 
   return (
-    <div className="flex py-12 justify-center bg-gray-100 min-h-screen">
+    <div className="flex py-12 justify-center  bg-gray-100 min-h-screen">
       <div className="w-full max-w-lg p-8 h-fit bg-white rounded-lg shadow-lg">
         <h2 className="text-3xl font-bold text-center text-primaryBlue mb-6">
           Support Ticket

@@ -87,7 +87,7 @@ const Register = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen  px-[1.5em] bg-gray-100">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(SignupSubmitHandler)}
@@ -97,7 +97,7 @@ const Register = () => {
             Sign Up as <span className="border-b ">{form.watch("role")}</span>
           </div>
 
-          <div className="gap-5 grid grid-cols-2">
+          <div className="gap-5 grid sm:grid-cols-2">
             <FormField
               control={form.control}
               name="role"

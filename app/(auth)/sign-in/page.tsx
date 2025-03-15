@@ -56,7 +56,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+    <div className="flex justify-center items-center min-h-screen  px-[1.5em] bg-gray-100">
       <div className="w-full max-w-md p-[2em] bg-white rounded-lg shadow-md">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
