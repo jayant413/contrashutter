@@ -405,7 +405,7 @@ export function BookingForm() {
       >
         <SectionTitle title={`Step ${currentStep + 1} of ${steps.length}`} />
 
-        <div className="h-[55vh]">{steps[currentStep]}</div>
+        <div className="min-h-[55vh]">{steps[currentStep]}</div>
         {currentStep === steps.length - 1 && (
           <div className="flex justify-end">
             <Button type="submit" disabled={paying}>

@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Sidebar from "@/components/Sidebar";
 import { Toaster } from "@/components/ui/sonner";
+import Overlay from "@/components/Overlay";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -34,6 +35,7 @@ export default function RootLayout({
         <Navbar />
         <main className="flex h-[89.5vh] overflow-hidden">
           <Sidebar />
+          <Overlay />
           <section className="overflow-auto w-full">
             <main className="min-h-screen">{children}</main>
           </section>

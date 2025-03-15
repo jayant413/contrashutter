@@ -38,7 +38,7 @@ const Partner = () => {
     }
 
     const commonDetails = (
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid sm:grid-cols-2 gap-4">
         <div>
           <h3 className="font-semibold">Business Name</h3>
           <p>{servicePartner?.name}</p>

@@ -21,7 +21,7 @@ import { Skeleton } from "./ui/skeleton";
 const Sidebar = () => {
   const currentPath = usePathname();
   const { user } = Store.useAuth();
-  const { isShowSidebar } = Store.useMain();
+  const { isShowSidebar, onToggleSidebar } = Store.useMain(); // Added onToggleSidebar
   const { allServices, getAllServices, setActiveService, activeService } =
     Store.useService();
 
@@ -114,17 +114,25 @@ const Sidebar = () => {
       ]
     : [{ href: "/", label: "Home", icon: HomeIcon }];
 
+  const handleClick = () => {
+    // Defined type of href
+    if (window.innerWidth < 1024) {
+      onToggleSidebar(); // Close sidebar on click if screen width is less than 1024px
+    }
+    setActiveService(null);
+  };
+
   return (
     <div
-      className={`border-r bg-alice-900 text-black h-screen pt-8 ${
-        isShowSidebar ? "w-[20em]" : "w-0"
+      className={`absolute lg:relative bg-white z-30 border-r bg-alice-900 text-black h-screen pt-8 ${
+        isShowSidebar ? "w-[20em] shadow-lg" : "w-0"
       } overflow-hidden duration-300`}
     >
       {/* Menu Items */}
       <ul className={`${isShowSidebar ? "block" : "hidden"}`}>
         {allServices ? (
           menuItems.map(({ href, label, icon: Icon, hide }) => (
-            <Link href={href} key={href} onClick={() => setActiveService(null)}>
+            <Link href={href} key={href} onClick={() => handleClick()}>
               <li
                 className={`flex items-center gap-x-4 mt-[0.5em] pl-[2em] cursor-pointer p-2  ${
                   currentPath === href
@@ -147,7 +155,10 @@ const Sidebar = () => {
               <Link
                 href={`/services/${service._id}`}
                 key={service._id}
-                onClick={() => setActiveService(service)}
+                onClick={() => {
+                  handleClick();
+                  setActiveService(service);
+                }}
               >
                 <li
                   className={`flex items-center gap-x-4 mt-[0.5em] pl-[2em] cursor-pointer p-2  ${

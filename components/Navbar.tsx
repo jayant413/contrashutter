@@ -32,6 +32,12 @@ import {
   LogOut,
   ShoppingCart,
   User,
+  Book,
+  PhoneCall,
+  PhoneIcon,
+  UserIcon,
+  InfoIcon,
+  HomeIcon,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "./ui/badge";
@@ -51,6 +57,7 @@ const Navbar = () => {
   const pathname = usePathname();
   const router = useRouter();
   const { setActiveService } = Store.useService();
+  const { onToggleSidebar, setIsShowSidebar } = Store.useMain(); // Extracted onToggleSidebar
   const [isSheetOpen, setSheetOpen] = useState(false); // State to manage sheet visibility
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -62,8 +69,14 @@ const Navbar = () => {
     });
   }, [checkLogin, router]);
 
+  useEffect(() => {
+    if (window.innerWidth > 1024) {
+      setIsShowSidebar(true);
+    }
+  }, [setIsShowSidebar]);
+
   return (
-    <nav className="flex items-center justify-between px-6 py-4 bg-white border-b shadow-sm">
+    <nav className="flex items-center justify-between px-6 py-4 bg-white border-b shadow-sm z-30">
       {/* Logo and Toggle Button */}
       <Sheet open={isSheetOpen} onOpenChange={setSheetOpen}>
         {" "}
@@ -134,7 +147,7 @@ const Navbar = () => {
       <div className="flex items-center space-x-4">
         <div
           className="p-2 bg-gray-100 rounded-md cursor-pointer"
-          onClick={Store.useMain().onToggleSidebar}
+          onClick={onToggleSidebar}
         >
           <FiMenu size={20} />
         </div>
@@ -162,13 +175,14 @@ const Navbar = () => {
       {/* Right side navigation */}
       <div className="relative flex items-center">
         {/* Mobile Menu Button */}
-        <button
-          className="p-2 md:hidden"
+        <Button
+          variant="ghost"
+          className="p-2 hidden"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle menu"
         >
           <FiMenu size={20} />
-        </button>
+        </Button>
 
         {/* Desktop Navigation - All items */}
         <div className="hidden md:flex items-center space-x-3">
@@ -208,12 +222,20 @@ const Navbar = () => {
               Contact
             </Button>
           </Link>
-          <Link href="/sign-in">
-            <Button variant="ghost">Sign In</Button>
-          </Link>
-          <Link href="/sign-up">
-            <Button>Sign Up</Button>
-          </Link>
+          {!user && (
+            <Link href="/sign-in">
+              <Button
+                variant="ghost"
+                className={`${
+                  pathname === "/sign-in"
+                    ? "text-primaryBlue font-semibold bg-gray-100"
+                    : "hover:text-primaryBlue/80"
+                } transition duration-300`}
+              >
+                Sign In
+              </Button>
+            </Link>
+          )}
         </div>
 
         {/* Mobile Menu Dropdown */}
@@ -253,146 +275,242 @@ const Navbar = () => {
                   Contact
                 </Button>
               </Link>
-              <div className="border-t mt-2 pt-2">
-                <Link href="/sign-in" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="ghost" className="w-full justify-start">
-                    Sign In
-                  </Button>
-                </Link>
-                <Link href="/sign-up" onClick={() => setMobileMenuOpen(false)}>
-                  <Button className="w-full justify-start mt-1">Sign Up</Button>
-                </Link>
-              </div>
+
+              <Link href="/sign-in" onClick={() => setMobileMenuOpen(false)}>
+                <Button variant="ghost" className="w-full justify-start">
+                  Sign In
+                </Button>
+              </Link>
             </div>
           </div>
         )}
-      </div>
+        {/* User Links */}
+        {user ? (
+          <ul className="flex items-center space-x-3 text-gray-600">
+            <li className="flex items-center space-x-1">
+              <Menubar className="rounded-none shadow-none border-b pb-2 focus:bg-transparent border-gray-300 border-x-0 border-t-0">
+                <MenubarMenu>
+                  <MenubarTrigger className="space-x-3">
+                    <Avatar className="w-8 h-8 border">
+                      <AvatarImage
+                        src={
+                          user?.profileImage
+                            ? `${imageEndpoint}${user?.profileImage}`
+                            : "https://github.com/shadcn.png"
+                        }
+                      />
+                      <AvatarFallback>
+                        {user?.fullname?.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm flex items-center border-none">
+                      {user?.fullname}
+                      <IoMdArrowDropdown className="mx-1 text-lg text-regular" />
+                    </span>
+                  </MenubarTrigger>
 
-      {/* User Links */}
-      {user ? (
-        <ul className="flex items-center space-x-3 text-gray-600">
-          <li className="flex items-center space-x-1">
-            <Menubar className="rounded-none shadow-none border-b pb-2 focus:bg-transparent border-gray-300 border-x-0 border-t-0">
-              <MenubarMenu>
-                <MenubarTrigger className="space-x-3">
-                  <Avatar className="w-8 h-8 border">
-                    <AvatarImage
-                      src={
-                        user?.profileImage
-                          ? `${imageEndpoint}${user?.profileImage}`
-                          : "https://github.com/shadcn.png"
-                      }
-                    />
-                    <AvatarFallback>{user?.fullname?.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <span className="text-sm flex items-center border-none">
-                    {user?.fullname}
-                    <IoMdArrowDropdown className="mx-1 text-lg text-regular" />
-                  </span>
-                </MenubarTrigger>
-
-                <MenubarContent>
-                  <Link href="/profile">
-                    <MenubarItem>
-                      <User className="h-4 -translate-x-[0.1em]" />
-                      <span>Profile</span>
-                    </MenubarItem>
-                  </Link>
-
-                  <Link
-                    href={`${
-                      user.role == "Client"
-                        ? "/client/my-bookings"
-                        : user.role == "Service Provider"
-                        ? "/partner/partner-program"
-                        : user.role == "Admin"
-                        ? "/admin/bookings"
-                        : "/"
-                    }`}
-                    onClick={() => setActiveService(null)}
-                  >
-                    {" "}
-                    <MenubarItem>
-                      {" "}
-                      <BriefcaseBusiness className="h-4 -translate-x-[0.1em]" />
-                      My Account{" "}
-                    </MenubarItem>
-                  </Link>
-
-                  <MenubarItem onClick={() => setSheetOpen(true)}>
-                    {" "}
-                    {/* Added onClick to open sheet */}
-                    <Bell className="h-4 -translate-x-[0.1em]" />
-                    <span>Notifications</span>
-                  </MenubarItem>
-
-                  <Link href="/wishlist">
-                    <MenubarItem className="flex items-center">
-                      <ShoppingCart className="h-4 -translate-x-[0.1em]" />
-                      <span>Wishlist</span>
-                    </MenubarItem>
-                  </Link>
-                  <Link href={pathname} target="_blank">
-                    <MenubarItem>
-                      <AppWindow className="h-4 -translate-x-[0.1em]" />
-                      <span>New Window</span>
-                    </MenubarItem>
-                  </Link>
-                  <MenubarSeparator />
-                  <Link href="/sign-in">
-                    <MenubarItem
-                      className="flex items-center"
-                      onClick={() => {
-                        logout();
-                        setActiveService(null);
-                      }}
+                  <MenubarContent>
+                    <Link href="/profile">
+                      <MenubarItem>
+                        <User className="h-4 -translate-x-[0.1em]" />
+                        <span>Profile</span>
+                      </MenubarItem>
+                    </Link>
+                    <Link
+                      href={`${
+                        user.role == "Client"
+                          ? "/client/my-bookings"
+                          : user.role == "Service Provider"
+                          ? "/partner/partner-program"
+                          : user.role == "Admin"
+                          ? "/admin/bookings"
+                          : "/"
+                      }`}
+                      onClick={() => setActiveService(null)}
                     >
-                      <LogOut className="h-4 translate-y-[0.1em]" />
-
-                      <span>Log out</span>
+                      {" "}
+                      <MenubarItem>
+                        {" "}
+                        <BriefcaseBusiness className="h-4 -translate-x-[0.1em]" />
+                        My Account{" "}
+                      </MenubarItem>
+                    </Link>
+                    <MenubarItem onClick={() => setSheetOpen(true)}>
+                      {" "}
+                      {/* Added onClick to open sheet */}
+                      <Bell className="h-4 -translate-x-[0.1em]" />
+                      <span>Notifications</span>
                     </MenubarItem>
-                  </Link>
-                </MenubarContent>
-              </MenubarMenu>
-            </Menubar>
-            <Link href="/wishlist">
-              <Button variant="ghost" className="relative">
-                <ShoppingCart />
-                {user?.wishlist.length > 0 && (
+                    <Link href="/wishlist">
+                      <MenubarItem className="flex items-center">
+                        <ShoppingCart className="h-4 -translate-x-[0.1em]" />
+                        <span>Wishlist</span>
+                      </MenubarItem>
+                    </Link>
+                    <Link href="/about" className="md:hidden">
+                      <MenubarItem>
+                        <Book className="h-4 -translate-x-[0.1em]" />
+                        <span>About Us</span>
+                      </MenubarItem>
+                    </Link>
+                    <Link href="/contact" className="md:hidden">
+                      <MenubarItem>
+                        <PhoneCall className="h-4 -translate-x-[0.1em]" />
+                        <span>Contact Us</span>
+                      </MenubarItem>
+                    </Link>{" "}
+                    <Link href={pathname} target="_blank">
+                      <MenubarItem>
+                        <AppWindow className="h-4 -translate-x-[0.1em]" />
+                        <span>New Window</span>
+                      </MenubarItem>
+                    </Link>
+                    <MenubarSeparator />
+                    <Link href="/sign-in">
+                      <MenubarItem
+                        className="flex items-center"
+                        onClick={() => {
+                          logout();
+                          setActiveService(null);
+                        }}
+                      >
+                        <LogOut className="h-4 translate-y-[0.1em]" />
+
+                        <span>Log out</span>
+                      </MenubarItem>
+                    </Link>
+                  </MenubarContent>
+                </MenubarMenu>
+              </Menubar>
+              <Link href="/wishlist" className="hidden lg:block">
+                <Button variant="ghost" className="relative">
+                  <ShoppingCart />
+                  {user?.wishlist.length > 0 && (
+                    <Badge
+                      variant="destructive"
+                      className="absolute top-1 right-2 text-[0.7rem] p-1 py-0  leading-none"
+                    >
+                      {user?.wishlist.length}
+                    </Badge>
+                  )}
+                </Button>
+              </Link>
+              <Button
+                variant="ghost"
+                onClick={() => setSheetOpen(true)}
+                className="relative hidden lg:block"
+              >
+                {user?.notifications.filter(
+                  (notification) => !notification.read
+                ).length > 0 && (
                   <Badge
                     variant="destructive"
                     className="absolute top-1 right-2 text-[0.7rem] p-1 py-0  leading-none"
                   >
-                    {user?.wishlist.length}
+                    {
+                      user?.notifications.filter(
+                        (notification) => !notification.read
+                      ).length
+                    }
                   </Badge>
                 )}
+                <Bell />
               </Button>
-            </Link>
-            <Button
-              variant="ghost"
-              onClick={() => setSheetOpen(true)}
-              className="relative"
-            >
-              {user?.notifications.filter((notification) => !notification.read)
-                .length > 0 && (
-                <Badge
-                  variant="destructive"
-                  className="absolute top-1 right-2 text-[0.7rem] p-1 py-0  leading-none"
+            </li>
+          </ul>
+        ) : (
+          <Menubar className="border-none md:hidden">
+            <MenubarMenu>
+              <MenubarTrigger className="space-x-3 border">
+                <span className="flex items-center">
+                  {pathname === "/" ? (
+                    <>
+                      <HomeIcon className="mr-2 w-4  translate-y-[0.1em] " />{" "}
+                      Home
+                    </>
+                  ) : pathname === "/about" ? (
+                    <>
+                      <InfoIcon className="mr-2 w-4  translate-y-[0.1em] " />{" "}
+                      About Us
+                    </>
+                  ) : pathname === "/contact" ? (
+                    <>
+                      <PhoneIcon className="mr-2 w-4  translate-y-[0.1em] " />{" "}
+                      Contact Us
+                    </>
+                  ) : pathname === "/sign-in" ? (
+                    <>
+                      <UserIcon className="mr-2 w-4  translate-y-[0.1em] " />{" "}
+                      Sign In
+                    </>
+                  ) : (
+                    <>Select</>
+                  )}
+                </span>
+                <IoMdArrowDropdown className="mx-1 text-lg text-regular" />
+              </MenubarTrigger>
+
+              <MenubarContent>
+                <Link
+                  href="/"
+                  onClick={() => {
+                    setActiveService(null);
+                    setIsShowSidebar(false);
+                  }}
                 >
-                  {
-                    user?.notifications.filter(
-                      (notification) => !notification.read
-                    ).length
-                  }
-                </Badge>
-              )}
-              <Bell />
-            </Button>
-          </li>
-        </ul>
-      ) : (
-        <></>
-      )}
+                  <MenubarItem>
+                    <span className="flex items-center">
+                      <HomeIcon className="mr-2 w-4 flex items-center" /> Home
+                    </span>
+                  </MenubarItem>
+                </Link>
+                <Link
+                  href="/about"
+                  onClick={() => {
+                    setActiveService(null);
+                    setIsShowSidebar(false);
+                  }}
+                >
+                  <MenubarItem>
+                    <span className="flex items-center">
+                      <InfoIcon className="mr-2 w-4 flex items-center" /> About
+                      Us
+                    </span>
+                  </MenubarItem>
+                </Link>
+                <Link
+                  href="/contact"
+                  onClick={() => {
+                    setActiveService(null);
+                    setIsShowSidebar(false);
+                  }}
+                >
+                  <MenubarItem>
+                    <span className="flex items-center">
+                      <PhoneIcon className="mr-2 w-4 flex items-center" />{" "}
+                      Contact Us
+                    </span>
+                  </MenubarItem>
+                </Link>
+                <Link
+                  href="/sign-in"
+                  onClick={() => {
+                    setActiveService(null);
+                    setIsShowSidebar(false);
+                  }}
+                >
+                  <MenubarItem>
+                    <span className="flex items-center">
+                      <UserIcon className="mr-2 w-4 flex items-center" /> Sign
+                      In
+                    </span>
+                  </MenubarItem>
+                </Link>
+              </MenubarContent>
+            </MenubarMenu>
+          </Menubar>
+        )}
+      </div>
     </nav>
   );
 };

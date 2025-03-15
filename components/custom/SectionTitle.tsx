@@ -29,7 +29,7 @@ const SectionTitle: React.FC<SectionTitleProps> = ({
         <Button
           variant="ghost"
           type="button"
-          className="absolute left-0 "
+          className="absolute left-0 top-[-2em] lg:top-0"
           onClick={() => router.back()}
         >
           <ArrowLeft />
