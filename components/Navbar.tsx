@@ -37,6 +37,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "./ui/badge";
 import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { cn } from "@/lib/utils";
+import { imageEndpoint } from "@/helper/api";
+
+// const navLinks = [
+//   { path: "/", label: "Home" },
+//   { path: "/about", label: "About Us" },
+//   { path: "/contact", label: "Contact Us" },
+// ];
 
 const Navbar = () => {
   const { checkLogin, logout, user, readNotification, clearNotifications } =
@@ -45,6 +52,7 @@ const Navbar = () => {
   const router = useRouter();
   const { setActiveService } = Store.useService();
   const [isSheetOpen, setSheetOpen] = useState(false); // State to manage sheet visibility
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     checkLogin().then((isLoggedIn) => {
@@ -66,15 +74,17 @@ const Navbar = () => {
             </SheetTitle>
             <SheetDescription className="flex items-center justify-between">
               <span>Here you can see your notifications</span>
-              {user && user?.notifications.length > 0 && (
-                <Button
-                  variant="ghost"
-                  onClick={clearNotifications}
-                  className="text-[0.9em] !py-[0.6em] px-[0.8em]"
-                >
-                  Clear all
-                </Button>
-              )}
+              {user &&
+                user.role !== "Admin" &&
+                user?.notifications.length > 0 && (
+                  <Button
+                    variant="ghost"
+                    onClick={clearNotifications}
+                    className="text-[0.9em] !py-[0.6em] px-[0.8em]"
+                  >
+                    Clear all
+                  </Button>
+                )}
             </SheetDescription>
           </SheetHeader>
           {user && user?.notifications.length > 0 ? (
@@ -130,35 +140,39 @@ const Navbar = () => {
         </div>
         <Link
           href="/"
-          className="flex items-center space-x-4"
+          className="flex items-center space-x-2 sm:space-x-4"
           onClick={() => setActiveService(null)}
         >
           <Image
-            className="object-contain w-10 h-10"
+            className="object-contain w-8 h-8 sm:w-10 sm:h-10"
             src={logo}
             alt="Contrashutter Logo"
           />
-
           <div>
-            <h1 className="text-lg font-semibold text-gray-800">
+            <h1 className="text-sm sm:text-lg font-semibold text-gray-800">
               Contrashutter
             </h1>
-            <p className="text-sm text-gray-500">
+            <p className="text-xs sm:text-sm text-gray-500">
               Let&apos;s Make It Memorable
             </p>
           </div>
         </Link>
       </div>
 
-      {/* Navigation Links */}
-      <ul className="flex space-x-3 text-gray-600  items-center">
-        <li>
-          <Link
-            href="/"
-            onClick={() => {
-              setActiveService(null);
-            }}
-          >
+      {/* Right side navigation */}
+      <div className="relative flex items-center">
+        {/* Mobile Menu Button */}
+        <button
+          className="p-2 md:hidden"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label="Toggle menu"
+        >
+          <FiMenu size={20} />
+        </button>
+
+        {/* Desktop Navigation - All items */}
+        <div className="hidden md:flex items-center space-x-3">
+          <Link href="/" onClick={() => setActiveService(null)}>
             <Button
               variant="ghost"
               className={`${
@@ -170,14 +184,7 @@ const Navbar = () => {
               Home
             </Button>
           </Link>
-        </li>
-        <li>
-          <Link
-            href="/about"
-            onClick={() => {
-              setActiveService(null);
-            }}
-          >
+          <Link href="/about" onClick={() => setActiveService(null)}>
             <Button
               variant="ghost"
               className={`${
@@ -189,14 +196,7 @@ const Navbar = () => {
               About Us
             </Button>
           </Link>
-        </li>
-        <li>
-          <Link
-            href="/contact"
-            onClick={() => {
-              setActiveService(null);
-            }}
-          >
+          <Link href="/contact" onClick={() => setActiveService(null)}>
             <Button
               variant="ghost"
               className={`${
@@ -205,18 +205,85 @@ const Navbar = () => {
                   : "hover:text-primaryBlue/80"
               } transition duration-300`}
             >
-              Contact Us
+              Contact
             </Button>
           </Link>
-        </li>
-        {user ? (
+          <Link href="/sign-in">
+            <Button variant="ghost">Sign In</Button>
+          </Link>
+          <Link href="/sign-up">
+            <Button>Sign Up</Button>
+          </Link>
+        </div>
+
+        {/* Mobile Menu Dropdown */}
+        {mobileMenuOpen && (
+          <div className="absolute right-0 top-12 w-56 bg-white rounded-lg shadow-lg py-2 md:hidden z-50">
+            <div className="flex flex-col">
+              <Link
+                href="/"
+                onClick={() => {
+                  setActiveService(null);
+                  setMobileMenuOpen(false);
+                }}
+              >
+                <Button variant="ghost" className="w-full justify-start">
+                  Home
+                </Button>
+              </Link>
+              <Link
+                href="/about"
+                onClick={() => {
+                  setActiveService(null);
+                  setMobileMenuOpen(false);
+                }}
+              >
+                <Button variant="ghost" className="w-full justify-start">
+                  About Us
+                </Button>
+              </Link>
+              <Link
+                href="/contact"
+                onClick={() => {
+                  setActiveService(null);
+                  setMobileMenuOpen(false);
+                }}
+              >
+                <Button variant="ghost" className="w-full justify-start">
+                  Contact
+                </Button>
+              </Link>
+              <div className="border-t mt-2 pt-2">
+                <Link href="/sign-in" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link href="/sign-up" onClick={() => setMobileMenuOpen(false)}>
+                  <Button className="w-full justify-start mt-1">Sign Up</Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* User Links */}
+      {user ? (
+        <ul className="flex items-center space-x-3 text-gray-600">
           <li className="flex items-center space-x-1">
             <Menubar className="rounded-none shadow-none border-b pb-2 focus:bg-transparent border-gray-300 border-x-0 border-t-0">
               <MenubarMenu>
                 <MenubarTrigger className="space-x-3">
-                  <Avatar className="w-8 h-8">
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                    <AvatarFallback>CN</AvatarFallback>
+                  <Avatar className="w-8 h-8 border">
+                    <AvatarImage
+                      src={
+                        user?.profileImage
+                          ? `${imageEndpoint}${user?.profileImage}`
+                          : "https://github.com/shadcn.png"
+                      }
+                    />
+                    <AvatarFallback>{user?.fullname?.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <span className="text-sm flex items-center border-none">
                     {user?.fullname}
@@ -322,39 +389,10 @@ const Navbar = () => {
               <Bell />
             </Button>
           </li>
-        ) : (
-          <>
-            <li>
-              <Link href="/sign-in" onClick={() => setActiveService(null)}>
-                <Button
-                  variant="ghost"
-                  className={`${
-                    pathname === "/sign-in"
-                      ? "text-primaryBlue font-semibold bg-gray-100"
-                      : "hover:text-primaryBlue/80"
-                  } transition duration-300`}
-                >
-                  Sign In
-                </Button>
-              </Link>
-            </li>
-            <li>
-              <Link href="/sign-up" onClick={() => setActiveService(null)}>
-                <Button
-                  variant="ghost"
-                  className={`${
-                    pathname === "/sign-up"
-                      ? "text-primaryBlue font-semibold bg-gray-100"
-                      : "hover:text-primaryBlue/80"
-                  } transition duration-300`}
-                >
-                  Sign Up
-                </Button>
-              </Link>
-            </li>
-          </>
-        )}
-      </ul>
+        </ul>
+      ) : (
+        <></>
+      )}
     </nav>
   );
 };

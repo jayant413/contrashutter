@@ -5,8 +5,8 @@
 
 /* Custom Scrollbar Styling */
 ::-webkit-scrollbar {
-  width: 10px; /* Width of the scrollbar */
-  height: 5px;
+  width: 0px; /* Width of the scrollbar */
+  height: 0px;
 }
 
 ::-webkit-scrollbar-track {

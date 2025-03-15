@@ -20,6 +20,7 @@ import Store from "@/helper/store";
 import { EventType } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { imageEndpoint } from "@/helper/api";
 
 const EventsPage = () => {
   const { serviceId } = useParams();
@@ -64,7 +65,11 @@ const EventsPage = () => {
                   <div className="h-44 bg-white flex items-center justify-center rounded-md shadow-md overflow-hidden">
                     <Image
                       className="h-full w-full object-cover"
-                      src={images[index] || birth} // Use images based on index
+                      src={
+                        event.image
+                          ? `${imageEndpoint}/${event.image}`
+                          : images[index] || birth
+                      } // Use images based on index
                       alt={event.eventName}
                       width={300}
                       height={176}

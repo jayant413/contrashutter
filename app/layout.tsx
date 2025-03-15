@@ -36,9 +36,9 @@ export default function RootLayout({
           <Sidebar />
           <section className="overflow-auto w-full">
             <main className="min-h-screen">{children}</main>
-            <Footer />
           </section>
         </main>
+        <Footer />
       </body>
     </html>
   );

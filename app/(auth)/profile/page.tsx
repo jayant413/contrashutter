@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { apiEndpoint } from "@/helper/api";
+import { apiEndpoint, imageEndpoint } from "@/helper/api";
 import { isApiError } from "@/types";
 import Image from "next/image";
+import { toast } from "sonner";
+import Store from "@/helper/store";
 
 // Define an enum for roles
 enum Role {
@@ -35,6 +37,10 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const { checkLogin } = Store.useAuth();
 
   // Fetch the user profile on component mount
   useEffect(() => {
@@ -50,6 +56,9 @@ export default function ProfilePage() {
         const data = await response.json();
         setProfile(data.user);
         setEditableProfile(data.user);
+        if (data.user.profileImage) {
+          setImagePreview(`${imageEndpoint}${data.user.profileImage}`);
+        }
       } catch (err) {
         if (isApiError(err)) {
           setError(err.message);
@@ -70,27 +79,41 @@ export default function ProfilePage() {
     setEditableProfile({ ...editableProfile, [name]: value });
   };
 
-  // const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-  //   if (!editableProfile) return;
-  //   setEditableProfile({ ...editableProfile, role: e.target.value as Role });
-  // };
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSaveProfile = async () => {
     if (!editableProfile) return;
 
     try {
       setLoading(true);
+      const formData = new FormData();
+
+      // Append all profile fields
+      Object.entries(editableProfile).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          formData.append(key, value);
+        }
+      });
+
+      // Append image if selected
+      if (selectedImage) {
+        formData.append("profileImage", selectedImage);
+      }
+
       const response = await fetch(`${apiEndpoint}/user/updateProfile`, {
-        method: "POST", // Using POST to update
+        method: "POST",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          fullname: editableProfile.fullname,
-          contact: editableProfile.contact,
-          role: editableProfile.role, // Excluding email
-        }),
+        body: formData,
       });
 
       if (!response.ok) {
@@ -98,12 +121,18 @@ export default function ProfilePage() {
       }
 
       const data = await response.json();
-      setProfile(data.user); // Update the original profile (including email)
-      setEditableProfile(data.user); // Update editable profile
-      setIsEditing(false); // Exit edit mode
+      setProfile(data.user);
+      setEditableProfile(data.user);
+      if (data.user.profileImage) {
+        setImagePreview(`${imageEndpoint}${data.user.profileImage}`);
+        checkLogin();
+      }
+      setIsEditing(false);
+      toast.success("Profile updated successfully!");
     } catch (err) {
       if (isApiError(err)) {
         setError(err.message);
+        toast.error(err.message);
       }
     } finally {
       setLoading(false);
@@ -111,7 +140,11 @@ export default function ProfilePage() {
   };
 
   const handleCancel = () => {
-    setEditableProfile(profile); // Reset changes
+    setEditableProfile(profile);
+    setSelectedImage(null);
+    if (profile?.profileImage) {
+      setImagePreview(`${imageEndpoint}${profile.profileImage}`);
+    }
     setIsEditing(false);
   };
 
@@ -148,7 +181,15 @@ export default function ProfilePage() {
             <div className="absolute -bottom-16 left-8">
               <div className="relative">
                 <div className="w-32 h-32 rounded-full border-4 border-white bg-gray-200 overflow-hidden">
-                  {!profile.profileImage ? (
+                  {imagePreview ? (
+                    <Image
+                      src={imagePreview}
+                      alt="Profile"
+                      width={128}
+                      height={128}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
                     <Image
                       // src={profile.profileImage}
                       src="https://github.com/shadcn.png"
@@ -157,26 +198,28 @@ export default function ProfilePage() {
                       height={100}
                       className="w-full h-full object-cover"
                     />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400">
-                      <svg
-                        className="w-16 h-16"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                        />
-                      </svg>
-                    </div>
+                    // <div className="w-full h-full flex items-center justify-center text-gray-400">
+                    //   <svg
+                    //     className="w-16 h-16"
+                    //     fill="none"
+                    //     stroke="currentColor"
+                    //     viewBox="0 0 24 24"
+                    //   >
+                    //     <path
+                    //       strokeLinecap="round"
+                    //       strokeLinejoin="round"
+                    //       strokeWidth={2}
+                    //       d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    //     />
+                    //   </svg>
+                    // </div>
                   )}
                 </div>
                 {isEditing && (
-                  <button className="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow-md">
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow-md"
+                  >
                     <svg
                       className="w-4 h-4 text-gray-600"
                       fill="none"
@@ -198,6 +241,13 @@ export default function ProfilePage() {
                     </svg>
                   </button>
                 )}
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                />
               </div>
             </div>
           </div>
@@ -234,17 +284,19 @@ export default function ProfilePage() {
                       name="email"
                       value={editableProfile?.email || ""}
                       readOnly
-                      className="bg-gray-50 cursor-not-allowed"
+                      className="bg-gray-100 cursor-not-allowed"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-1 ">
                       Phone Number
                     </label>
                     <Input
                       name="contact"
+                      readOnly
                       value={editableProfile?.contact || ""}
                       onChange={handleInputChange}
+                      className="bg-gray-100 cursor-not-allowed"
                     />
                   </div>
                   <div>

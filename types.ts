@@ -102,6 +102,11 @@ export interface UserType {
   }>;
   wishlist: PackageType[];
   partnerId?: string;
+  dateOfBirth?: string;
+  aadharCard?: string;
+  panCard?: string;
+  address?: string;
+  profileImage?: string;
 }
 
 // * Razorpay Types Order Id
