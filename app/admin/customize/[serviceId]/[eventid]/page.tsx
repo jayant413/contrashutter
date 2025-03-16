@@ -3,67 +3,79 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
 import { apiEndpoint } from "@/helper/api";
-import { isApiError } from "@/types";
+import { EventType, isApiError, PackageType, ServiceType } from "@/types";
 import SectionTitle from "@/components/custom/SectionTitle";
-interface Package {
-  _id: string;
-  name: string;
-  price: number;
-  booking_price: number;
-  serviceId: string;
-  eventId: string;
-  card_details: { product_name: string; quantity: string }[];
-  package_details: { title: string; subtitle: string[] }[];
-  bill_details: { type: string; amount: string }[];
-}
-
-interface Service {
-  _id: string;
-  name: string;
-}
-
-interface Event {
-  _id: string;
-  eventName: string;
-}
-
-interface CardDetail {
-  product: string;
-  quantity: string;
-}
-
-interface PackageDetail {
-  title: string;
-  subtitles: string[];
-}
-
-interface BillDetail {
-  type: string;
-  amount: string;
-}
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AcceptOnlyNumbers } from "@/helper/commonFunctions";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+const packageSchema = z.object({
+  name: z.string().min(1, "Package name is required"),
+  price: z.string().min(1, "Price is required"),
+  booking_price: z.string().min(1, "Booking price is required"),
+  serviceId: z.string().min(1, "Service is required"),
+  eventId: z.string().min(1, "Event is required"),
+  card_details: z.array(
+    z.object({
+      product_name: z.string(),
+      quantity: z.string(),
+    })
+  ),
+  package_details: z.array(
+    z.object({
+      title: z.string(),
+      subtitles: z.array(z.string()),
+    })
+  ),
+  bill_details: z.array(
+    z.object({
+      type: z.string(),
+      amount: z.string(),
+    })
+  ),
+});
 
 const PackagesPage = ({ params }: { params: Promise<{ eventid: string }> }) => {
-  const [packages, setPackages] = useState<Package[]>([]);
+  const [packages, setPackages] = useState<PackageType[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [packageToEdit, setPackageToEdit] = useState<Package | null>(null);
-  const [packageName, setPackageName] = useState("");
-  const [packagePrice, setPackagePrice] = useState("");
-  const [bookingPrice, setBookingPrice] = useState("");
-  const [serviceId, setServiceId] = useState("");
-  const [eventId, setEventId] = useState("");
-  const [cardDetails, setCardDetails] = useState<CardDetail[]>([
-    { product: "", quantity: "" },
-  ]);
-  const [packageDetails, setPackageDetails] = useState<PackageDetail[]>([
-    { title: "", subtitles: [] },
-  ]);
-  const [billDetails, setBillDetails] = useState<BillDetail[]>([
-    { type: "", amount: "" },
-  ]);
-  const [services, setServices] = useState<Service[]>([]);
-  const [events, setEvents] = useState<Event[]>([]);
+  const [packageToEdit, setPackageToEdit] = useState<PackageType | null>(null);
+  const [services, setServices] = useState<ServiceType[]>([]);
+  const [events, setEvents] = useState<EventType[]>([]);
+  const router = useRouter();
+
+  const form = useForm<z.infer<typeof packageSchema>>({
+    resolver: zodResolver(packageSchema),
+    defaultValues: {
+      name: "",
+      price: "",
+      booking_price: "",
+      serviceId: "",
+      eventId: "",
+      card_details: [],
+      package_details: [],
+      bill_details: [],
+    },
+  });
+
+  const { reset, control } = form;
 
   // Fetch packages
   useEffect(() => {
@@ -75,7 +87,6 @@ const PackagesPage = ({ params }: { params: Promise<{ eventid: string }> }) => {
         setPackages(res.data);
       } catch (error) {
         console.error("Error fetching packages:", error);
-        setError("Failed to fetch packages.");
       } finally {
         setLoading(false);
       }
@@ -92,7 +103,6 @@ const PackagesPage = ({ params }: { params: Promise<{ eventid: string }> }) => {
         setServices(res.data);
       } catch (error) {
         console.error("Error fetching services:", error);
-        setError("Failed to fetch services.");
       }
     };
 
@@ -101,176 +111,70 @@ const PackagesPage = ({ params }: { params: Promise<{ eventid: string }> }) => {
 
   // Fetch events when service is selected
   useEffect(() => {
-    if (serviceId) {
+    if (packageToEdit?.serviceId) {
       const getEvents = async () => {
         try {
-          const res = await axios.get(`${apiEndpoint}/services/${serviceId}`);
+          const res = await axios.get(
+            `${apiEndpoint}/services/${packageToEdit.serviceId._id}`
+          );
           setEvents(res.data.events);
         } catch (error) {
           console.error("Error fetching events:", error);
-          setError("Failed to fetch events.");
         }
       };
 
       getEvents();
     }
-  }, [serviceId]);
+  }, [packageToEdit]);
 
   // Set form data when package is selected for editing
   useEffect(() => {
-    if (packageToEdit) {
-      setPackageName(packageToEdit.name);
-      setPackagePrice(packageToEdit.price.toString());
-      setBookingPrice(packageToEdit.booking_price.toString());
-      setServiceId(packageToEdit.serviceId);
-      setEventId(packageToEdit.eventId);
-
-      // Map card details from backend to frontend format
-      setCardDetails(
-        packageToEdit.card_details.map((card) => ({
-          product: card.product_name || "",
-          quantity: card.quantity || "",
-        }))
-      );
-
-      // Map package details from backend to frontend format
-      setPackageDetails(
-        packageToEdit.package_details.map((detail) => ({
-          title: detail.title || "",
-          subtitles: Array.isArray(detail.subtitle) ? detail.subtitle : [],
-        }))
-      );
-
-      setBillDetails(packageToEdit.bill_details);
+    if (packageToEdit && events.length > 0 && services.length > 0) {
+      form.reset({
+        name: packageToEdit.name,
+        price: packageToEdit.price?.toString() || "",
+        booking_price: packageToEdit.booking_price?.toString() || "",
+        serviceId: packageToEdit.serviceId._id,
+        eventId: packageToEdit.eventId._id,
+        card_details: packageToEdit.card_details?.map((detail) => ({
+          product_name: detail.product_name,
+          quantity: detail.quantity.toString(),
+        })),
+        package_details: packageToEdit.package_details?.map((detail) => ({
+          title: detail.title,
+          subtitles: detail.subtitle || [],
+        })),
+        bill_details: packageToEdit.bill_details?.map((detail) => ({
+          type: detail.type,
+          amount: detail.amount.toString(),
+        })),
+      });
     }
-  }, [packageToEdit]);
+  }, [packageToEdit, form, events, services]);
 
-  const addCardDetail = () => {
-    setCardDetails([...cardDetails, { product: "", quantity: "" }]);
-  };
-
-  const addPackageDetail = () => {
-    setPackageDetails([...packageDetails, { title: "", subtitles: [] }]);
-  };
-
-  const addBillDetail = () => {
-    setBillDetails([...billDetails, { type: "", amount: "" }]);
-  };
-
-  const addSubtitle = (index: number) => {
-    const newPackageDetails = [...packageDetails];
-    if (!Array.isArray(newPackageDetails[index].subtitles)) {
-      newPackageDetails[index].subtitles = [];
-    }
-    newPackageDetails[index].subtitles.push("");
-    setPackageDetails(newPackageDetails);
-  };
-
-  const removeSubtitle = (index: number, subtitleIndex: number) => {
-    const newPackageDetails = [...packageDetails];
-    newPackageDetails[index].subtitles.splice(subtitleIndex, 1);
-    setPackageDetails(newPackageDetails);
-  };
-
-  const removeTitle = (index: number) => {
-    const newPackageDetails = [...packageDetails];
-    newPackageDetails.splice(index, 1);
-    setPackageDetails(newPackageDetails);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: z.infer<typeof packageSchema>) => {
+    console.log(data);
     if (!packageToEdit) {
-      setError("No package selected for editing");
       return;
     }
 
     setLoading(true);
-    setError("");
 
     try {
-      // Basic validation
-      if (
-        !serviceId ||
-        !eventId ||
-        !packageName ||
-        !packagePrice ||
-        !bookingPrice
-      ) {
-        setError("Please fill in all required fields");
-        return;
-      }
-
-      // Validate card details
-      const validCardDetails = cardDetails.filter(
-        (card) => card.product.trim() !== ""
-      );
-      if (validCardDetails.length === 0) {
-        setError("At least one card detail is required");
-        return;
-      }
-
-      // Validate package details
-      const validPackageDetails = packageDetails.filter(
-        (detail) => detail.title.trim() !== ""
-      );
-      if (validPackageDetails.length === 0) {
-        setError("At least one package detail is required");
-        return;
-      }
-
-      // Validate bill details
-      const validBillDetails = billDetails.filter(
-        (bill) => bill.type.trim() !== ""
-      );
-      if (validBillDetails.length === 0) {
-        setError("At least one bill detail is required");
-        return;
-      }
-
-      const payload = {
-        serviceId,
-        eventId,
-        name: packageName.trim(),
-        price: Number(packagePrice),
-        booking_price: Number(bookingPrice),
-        card_details: validCardDetails.map((card) => ({
-          product_name: card.product.trim(),
-          quantity: card.quantity,
-        })),
-        package_details: validPackageDetails.map((detail) => ({
-          title: detail.title.trim(),
-          subtitle: detail.subtitles.filter(
-            (subtitle) => subtitle.trim() !== ""
-          ),
-        })),
-        bill_details: validBillDetails.map((bill) => ({
-          type: bill.type.trim(),
-          amount: bill.amount,
-        })),
-      };
-
-      await axios.put(`${apiEndpoint}/packages/${packageToEdit._id}`, payload);
-
-      // Reset form and refresh data
+      await axios.put(`${apiEndpoint}/packages/${packageToEdit._id}`, data);
+      reset();
       setPackageToEdit(null);
-      setPackageName("");
-      setPackagePrice("");
-      setBookingPrice("");
-      setCardDetails([{ product: "", quantity: "" }]);
-      setPackageDetails([{ title: "", subtitles: [] }]);
-      setBillDetails([{ type: "", amount: "" }]);
 
-      // Refresh packages list
       const { eventid } = await params;
       const response = await axios.get(
         `${apiEndpoint}/packages/event/${eventid}`
       );
       setPackages(response.data);
+      toast.success("Package updated successfully");
     } catch (error) {
       if (isApiError(error)) {
         console.error("Error details:", error);
-        setError("Failed to update package");
+        toast.error("Error updating package");
       }
     } finally {
       setLoading(false);
@@ -278,244 +182,348 @@ const PackagesPage = ({ params }: { params: Promise<{ eventid: string }> }) => {
   };
 
   return (
-    <div className="flex flex-col items-center min-h-screen  p-6">
-      <SectionTitle title={`Event Packages`} />
+    <div className="flex flex-col items-center min-h-screen p-6">
+      <SectionTitle
+        title={`Event Packages`}
+        onClick={() => (packageToEdit ? setPackageToEdit(null) : router.back())}
+      />
 
       <div className="w-full max-w-3xl bg-white p-6 rounded-lg">
         {packageToEdit ? (
-          <div>
-            <h1 className="text-2xl font-bold mb-4">Edit Package</h1>
-            {/* Basic Package Info */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium">
-                  Package Name
-                </label>
-                <input
-                  type="text"
-                  value={packageName}
-                  onChange={(e) => setPackageName(e.target.value)}
-                  className="border p-2 rounded-md w-full"
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <h1 className="text-2xl font-bold mb-4">Edit Package</h1>
+
+              {/* Basic Package Info */}
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Package Name</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Enter package name" />
+                      </FormControl>
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">
-                  Package Price
-                </label>
-                <input
-                  type="number"
-                  value={packagePrice}
-                  onChange={(e) => setPackagePrice(e.target.value)}
-                  className="border p-2 rounded-md w-full"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">
-                  Booking Price
-                </label>
-                <input
-                  type="number"
-                  value={bookingPrice}
-                  onChange={(e) => setBookingPrice(e.target.value)}
-                  className="border p-2 rounded-md w-full"
-                />
-              </div>
-            </div>
 
-            {/* Service and Event Selection */}
-            <div className="mt-4">
-              <label className="block text-sm font-medium">
-                Select Service
-              </label>
-              <select
-                value={serviceId}
-                onChange={(e) => setServiceId(e.target.value)}
-                className="border p-2 rounded-md w-full"
-              >
-                <option value="">Select a service</option>
-                {services.map((service) => (
-                  <option key={service._id} value={service._id}>
-                    {service.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="mt-4">
-              <label className="block text-sm font-medium">Select Event</label>
-              <select
-                value={eventId}
-                onChange={(e) => setEventId(e.target.value)}
-                className="border p-2 rounded-md w-full"
-              >
-                <option value="">Select an event</option>
-                {events.map((event) => (
-                  <option key={event._id} value={event._id}>
-                    {event.eventName}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Card Details Section */}
-            <div className="mt-6">
-              <h2 className="text-lg font-semibold">Card Details</h2>
-              {cardDetails.map((card, index) => (
-                <div key={index} className="grid grid-cols-2 gap-4 mt-2">
-                  <input
-                    type="text"
-                    value={card.product}
-                    onChange={(e) => {
-                      const newCardDetails = [...cardDetails];
-                      newCardDetails[index].product = e.target.value;
-                      setCardDetails(newCardDetails);
-                    }}
-                    placeholder="Product Name"
-                    className="border p-2 rounded-md"
-                  />
-                  <input
-                    type="text"
-                    value={card.quantity}
-                    onChange={(e) => {
-                      const newCardDetails = [...cardDetails];
-                      newCardDetails[index].quantity = e.target.value;
-                      setCardDetails(newCardDetails);
-                    }}
-                    placeholder="Quantity"
-                    className="border p-2 rounded-md"
-                  />
-                </div>
-              ))}
-              <Button
-                onClick={addCardDetail}
-                className="mt-2 bg-blue-500 hover:bg-blue-600 text-white"
-              >
-                Add More
-              </Button>
-            </div>
-
-            {/* Package Details Section */}
-            <div className="mt-6">
-              <h2 className="text-lg font-semibold">Package Details</h2>
-              {packageDetails.map((detail, index) => (
-                <div key={index} className="mt-2">
-                  <div className="flex justify-between items-center">
-                    <input
-                      type="text"
-                      value={detail.title}
-                      onChange={(e) => {
-                        const newPackageDetails = [...packageDetails];
-                        newPackageDetails[index].title = e.target.value;
-                        setPackageDetails(newPackageDetails);
-                      }}
-                      placeholder="Title"
-                      className="border p-2 rounded-md w-full"
-                    />
-                    <Button
-                      className="ml-2 text-white bg-blue-500"
-                      onClick={() => removeTitle(index)}
-                    >
-                      X
-                    </Button>
-                  </div>
-                  {Array.isArray(detail.subtitles) &&
-                    detail.subtitles.map((subtitle, subtitleIndex) => (
-                      <div
-                        key={subtitleIndex}
-                        className="flex justify-between items-center mt-2 mx-4"
-                      >
-                        <input
+                <FormField
+                  control={control}
+                  name="price"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Package Price</FormLabel>
+                      <FormControl>
+                        <Input
                           type="text"
-                          value={subtitle}
+                          {...field}
+                          placeholder="Enter price"
                           onChange={(e) => {
-                            const newPackageDetails = [...packageDetails];
-                            newPackageDetails[index].subtitles[subtitleIndex] =
-                              e.target.value;
-                            setPackageDetails(newPackageDetails);
+                            const value = e.target.value;
+                            if (AcceptOnlyNumbers(value)) {
+                              field.onChange(value);
+                            }
                           }}
-                          placeholder="Subtitle"
-                          className="border p-2 rounded-md w-full"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={control}
+                  name="booking_price"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Booking Price</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          {...field}
+                          placeholder="Enter booking price"
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (AcceptOnlyNumbers(value)) {
+                              field.onChange(value);
+                            }
+                          }}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Service and Event Selection */}
+              <FormField
+                control={control}
+                name="serviceId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Select Service</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a service" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {services.map((service) => (
+                          <SelectItem key={service._id} value={service._id}>
+                            {service.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={control}
+                name="eventId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Select Event</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select an event" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {events.map((event) => (
+                          <SelectItem key={event._id} value={event._id || ""}>
+                            {event.eventName}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+
+              {/* Card Details Section */}
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-lg font-semibold">Card Details</h2>
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      const currentDetails =
+                        form.getValues("card_details") || [];
+                      form.setValue("card_details", [
+                        ...currentDetails,
+                        { product_name: "", quantity: "" },
+                      ]);
+                    }}
+                  >
+                    Add More
+                  </Button>
+                </div>
+                {form.watch("card_details")?.map((card, index) => (
+                  <div key={index} className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={control}
+                      name={`card_details.${index}.product_name`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input {...field} placeholder="Product Name" />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={control}
+                      name={`card_details.${index}.quantity`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input {...field} placeholder="Quantity" />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {/* Package Details Section */}
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-lg font-semibold">Package Details</h2>
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      const currentDetails =
+                        form.getValues("package_details") || [];
+                      form.setValue("package_details", [
+                        ...currentDetails,
+                        { title: "", subtitles: [] },
+                      ]);
+                    }}
+                  >
+                    Add Title
+                  </Button>
+                </div>
+                {form.watch("package_details")?.map((detail, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex gap-2">
+                      <FormField
+                        control={control}
+                        name={`package_details.${index}.title`}
+                        render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormControl>
+                              <Input {...field} placeholder="Title" />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        onClick={() => {
+                          const currentDetails =
+                            form.getValues("package_details");
+                          currentDetails.splice(index, 1);
+                          form.setValue("package_details", currentDetails);
+                        }}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                    {detail.subtitles?.map((subtitle, subtitleIndex) => (
+                      <div key={subtitleIndex} className="flex gap-2 ml-4">
+                        <FormField
+                          control={control}
+                          name={`package_details.${index}.subtitles.${subtitleIndex}`}
+                          render={({ field }) => (
+                            <FormItem className="flex-1">
+                              <FormControl>
+                                <Input {...field} placeholder="Subtitle" />
+                              </FormControl>
+                            </FormItem>
+                          )}
                         />
                         <Button
-                          className="ml-2 text-white bg-blue-500"
-                          onClick={() => removeSubtitle(index, subtitleIndex)}
+                          type="button"
+                          variant="destructive"
+                          onClick={() => {
+                            const currentSubtitles = form.getValues(
+                              `package_details.${index}.subtitles`
+                            );
+                            currentSubtitles.splice(subtitleIndex, 1);
+                            form.setValue(
+                              `package_details.${index}.subtitles`,
+                              currentSubtitles
+                            );
+                          }}
                         >
-                          X
+                          Remove
                         </Button>
                       </div>
                     ))}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="ml-4"
+                      onClick={() => {
+                        const currentSubtitles =
+                          form.getValues(
+                            `package_details.${index}.subtitles`
+                          ) || [];
+                        form.setValue(`package_details.${index}.subtitles`, [
+                          ...currentSubtitles,
+                          "",
+                        ]);
+                      }}
+                    >
+                      Add Subtitle
+                    </Button>
+                  </div>
+                ))}
+              </div>
+
+              {/* Bill Details Section */}
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-lg font-semibold">Bill Details</h2>
                   <Button
-                    onClick={() => addSubtitle(index)}
-                    className="mt-2 bg-blue-500 hover:bg-blue-600 text-white"
+                    type="button"
+                    onClick={() => {
+                      const currentDetails =
+                        form.getValues("bill_details") || [];
+                      form.setValue("bill_details", [
+                        ...currentDetails,
+                        { type: "", amount: "" },
+                      ]);
+                    }}
                   >
-                    Add Subtitle
+                    Add More
                   </Button>
                 </div>
-              ))}
-              <Button
-                onClick={addPackageDetail}
-                className="mt-2 bg-blue-500 hover:bg-blue-600 text-white"
-              >
-                Add Title
-              </Button>
-            </div>
+                {form.watch("bill_details")?.map((bill, index) => (
+                  <div key={index} className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={control}
+                      name={`bill_details.${index}.type`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input {...field} placeholder="Type" />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={control}
+                      name={`bill_details.${index}.amount`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input {...field} placeholder="Amount" />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                ))}
+              </div>
 
-            {/* Bill Details Section */}
-            <div className="mt-6">
-              <h2 className="text-lg font-semibold">Bill Details</h2>
-              {billDetails.map((bill, index) => (
-                <div key={index} className="grid grid-cols-2 gap-4 mt-2">
-                  <input
-                    type="text"
-                    value={bill.type}
-                    onChange={(e) => {
-                      const newBillDetails = [...billDetails];
-                      newBillDetails[index].type = e.target.value;
-                      setBillDetails(newBillDetails);
-                    }}
-                    placeholder="Type"
-                    className="border p-2 rounded-md"
-                  />
-                  <input
-                    type="text"
-                    value={bill.amount}
-                    onChange={(e) => {
-                      const newBillDetails = [...billDetails];
-                      newBillDetails[index].amount = e.target.value;
-                      setBillDetails(newBillDetails);
-                    }}
-                    placeholder="Amount"
-                    className="border p-2 rounded-md"
-                  />
-                </div>
-              ))}
-              <Button
-                onClick={addBillDetail}
-                className="mt-2 bg-blue-500 hover:bg-blue-600 text-white"
-              >
-                Add More
-              </Button>
-            </div>
-
-            <Button
-              onClick={handleSubmit}
-              className="mt-6 bg-blue-500 hover:bg-blue-600 text-white w-full"
-            >
-              Submit Package
-            </Button>
-          </div>
+              <div className="flex justify-end gap-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setPackageToEdit(null)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit">Save Changes</Button>
+              </div>
+            </form>
+          </Form>
         ) : (
           <div>
             {loading ? (
               <p>Loading...</p>
-            ) : error ? (
-              <p>{error}</p>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {packages.map((pkg) => (
                   <div
                     key={pkg._id}
-                    className="bg-white shadow-md rounded-lg p-4"
+                    className="bg-white shadow-md rounded-lg p-4 flex flex-col justify-between"
                   >
                     <h2 className="font-semibold text-lg">{pkg.name}</h2>
                     <p className="mt-2 text-sm">Price: {pkg.price}</p>
@@ -523,8 +531,10 @@ const PackagesPage = ({ params }: { params: Promise<{ eventid: string }> }) => {
                       Booking Price: {pkg.booking_price}
                     </p>
                     <Button
-                      onClick={() => setPackageToEdit(pkg)}
-                      className="mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md"
+                      onClick={() =>
+                        setPackageToEdit(pkg as unknown as PackageType)
+                      }
+                      className="mt-4 w-full"
                     >
                       Edit
                     </Button>

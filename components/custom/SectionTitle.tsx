@@ -9,12 +9,14 @@ interface SectionTitleProps {
   title: string; // Define title prop
   hideBackButton?: boolean;
   className?: string;
+  onClick?: () => void | null;
 }
 
 const SectionTitle: React.FC<SectionTitleProps> = ({
   title,
   hideBackButton = false,
   className = "",
+  onClick = null,
 }) => {
   const router = useRouter();
 
@@ -30,7 +32,7 @@ const SectionTitle: React.FC<SectionTitleProps> = ({
           variant="ghost"
           type="button"
           className="absolute left-0 top-[-2em] lg:top-0"
-          onClick={() => router.back()}
+          onClick={() => (onClick ? onClick() : router.back())}
         >
           <ArrowLeft />
           Go Back
