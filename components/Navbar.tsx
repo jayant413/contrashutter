@@ -45,14 +45,24 @@ import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { cn } from "@/lib/utils";
 import { imageEndpoint } from "@/helper/api";
 
+// const navLinks = [
+//   { path: "/", label: "Home" },
+//   { path: "/about", label: "About Us" },
+//   { path: "/contact", label: "Contact Us" },
+// ];
+
 const Navbar = () => {
-  const { logout, user, readNotification, clearNotifications } =
+  const { checkLogin, logout, user, readNotification, clearNotifications } =
     Store.useAuth();
   const pathname = usePathname();
   const { setActiveService } = Store.useService();
   const { onToggleSidebar, setIsShowSidebar } = Store.useMain(); // Extracted onToggleSidebar
   const [isSheetOpen, setSheetOpen] = useState(false); // State to manage sheet visibility
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    checkLogin();
+  }, [checkLogin]);
 
   useEffect(() => {
     if (window.innerWidth > 1024) {

@@ -219,14 +219,17 @@ const CustomizeServicePage = ({
               </div>
             </div>
           ) : (
-            <div className="flex gap-4 justify-center">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-[2em] ">
               {service.events.map((event) => (
                 <div
                   className="flex justify-between items-center p-2 gap-2 relative"
                   key={event._id}
                 >
                   <Link href={`/admin/customize/${service._id}/${event._id}`}>
-                    <Button variant="outline" className="relative">
+                    <Button
+                      variant="outline"
+                      className="relative w-[15em] h-[3em]"
+                    >
                       {event.eventName}
                       <Badge
                         variant="outline"
