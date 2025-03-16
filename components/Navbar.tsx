@@ -15,7 +15,7 @@ import Image from "next/image";
 import logo from "@/public/assets/Dark-Blue-BG-1-1024x1024.jpg";
 import Link from "next/link";
 import Store from "@/helper/store";
-import { usePathname, useRouter } from "next/navigation"; // Import usePathname
+import { usePathname } from "next/navigation"; // Import usePathname
 import {
   Menubar,
   MenubarContent,
@@ -45,29 +45,14 @@ import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { cn } from "@/lib/utils";
 import { imageEndpoint } from "@/helper/api";
 
-// const navLinks = [
-//   { path: "/", label: "Home" },
-//   { path: "/about", label: "About Us" },
-//   { path: "/contact", label: "Contact Us" },
-// ];
-
 const Navbar = () => {
-  const { checkLogin, logout, user, readNotification, clearNotifications } =
+  const { logout, user, readNotification, clearNotifications } =
     Store.useAuth();
   const pathname = usePathname();
-  const router = useRouter();
   const { setActiveService } = Store.useService();
   const { onToggleSidebar, setIsShowSidebar } = Store.useMain(); // Extracted onToggleSidebar
   const [isSheetOpen, setSheetOpen] = useState(false); // State to manage sheet visibility
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    checkLogin().then((isLoggedIn) => {
-      if (!isLoggedIn) {
-        router.push("/sign-in");
-      }
-    });
-  }, [checkLogin, router]);
 
   useEffect(() => {
     if (window.innerWidth > 1024) {

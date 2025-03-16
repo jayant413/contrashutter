@@ -73,25 +73,34 @@ const Footer = () => {
           <Separator className="h-3 bg-[#98a0a4] mb-3" />
           <ul className="flex flex-col gap-2">
             <li>
-              <Link href="#" className="hover:text-primaryOrange">
+              <Link
+                href="/terms-conditions"
+                className="hover:text-primaryOrange"
+              >
                 Terms And Conditions
               </Link>
             </li>
             <Separator />
             <li>
-              <Link href="#" className="hover:text-primaryOrange">
+              <Link href="/refund-policy" className="hover:text-primaryOrange">
                 Refund Policy
               </Link>
             </li>
             <Separator />
             <li>
-              <Link href="#" className="hover:text-primaryOrange">
+              <Link
+                href="/service-cancellation-policy"
+                className="hover:text-primaryOrange"
+              >
                 Service Cancellation Policy
               </Link>
             </li>
             <Separator />
             <li>
-              <Link href="#" className="hover:text-primaryOrange">
+              <Link
+                href="/return-replace-policy"
+                className="hover:text-primaryOrange"
+              >
                 Product Return Policy
               </Link>
             </li>
@@ -106,7 +115,7 @@ const Footer = () => {
           <Separator className="h-3 bg-[#98a0a4] mb-3" />
           <ul className="flex flex-col gap-2">
             <li>
-              <Link href="#" className="hover:text-primaryOrange">
+              <Link href="/faqs" className="hover:text-primaryOrange">
                 FAQs
               </Link>
             </li>
@@ -116,7 +125,7 @@ const Footer = () => {
               </Link>
             </li>
             <li>
-              <Link href="#" className="hover:text-primaryOrange">
+              <Link href="/contact-us" className="hover:text-primaryOrange">
                 Career With Us
               </Link>
             </li>
