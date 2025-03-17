@@ -12,6 +12,7 @@ import {
   List,
   Grid2X2,
   BrushIcon,
+  Pen,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -173,6 +174,8 @@ const Sidebar = () => {
                     <Brush size={20} />
                   ) : service.name.trim() === "Decoration" ? (
                     <Gift size={20} />
+                  ) : service.name.trim() === "Graphic Design" ? (
+                    <Pen size={20} />
                   ) : null}
                   <span>{service.name}</span>
                 </li>
