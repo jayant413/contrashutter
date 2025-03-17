@@ -256,62 +256,64 @@ const PackagesPage = ({ params }: { params: Promise<{ eventid: string }> }) => {
                 />
               </div>
 
-              {/* Service and Event Selection */}
-              <FormField
-                control={control}
-                name="serviceId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Select Service</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      value={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a service" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {services.map((service) => (
-                          <SelectItem key={service._id} value={service._id}>
-                            {service.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormItem>
-                )}
-              />
+              <div className="grid grid-cols-2 gap-4">
+                {/* Service and Event Selection */}
+                <FormField
+                  control={control}
+                  name="serviceId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Select Service</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a service" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {services.map((service) => (
+                            <SelectItem key={service._id} value={service._id}>
+                              {service.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={control}
-                name="eventId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Select Event</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      value={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select an event" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {events.map((event) => (
-                          <SelectItem key={event._id} value={event._id || ""}>
-                            {event.eventName}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={control}
+                  name="eventId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Select Event</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select an event" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {events.map((event) => (
+                            <SelectItem key={event._id} value={event._id || ""}>
+                              {event.eventName}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               {/* Card Details Section */}
               <div className="space-y-4">
@@ -437,7 +439,6 @@ const PackagesPage = ({ params }: { params: Promise<{ eventid: string }> }) => {
                     ))}
                     <Button
                       type="button"
-                      variant="outline"
                       className="ml-4"
                       onClick={() => {
                         const currentSubtitles =
