@@ -37,14 +37,6 @@ const AddPackagePage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Only check for mandatory fields
-    if (!serviceName || !eventName || !packageName || !packagePrice) {
-      alert(
-        "Please fill in all required fields: Service, Event, Package Name, and Package Price"
-      );
-      return;
-    }
-
     try {
       // Find the service and event IDs
       const service = services.find((s) => s.name === serviceName);
@@ -67,7 +59,7 @@ const AddPackagePage = () => {
         })),
         package_details: packageDetails.map((detail) => ({
           title: detail.title,
-          subtitle: detail.subtitles, // Changed from subtitles array to subtitle
+          subtitles: detail.subtitles, // Changed from subtitles array to subtitle
         })),
         bill_details: billDetails.map((bill) => ({
           type: bill.type,

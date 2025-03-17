@@ -142,7 +142,7 @@ const PackagesPage = ({ params }: { params: Promise<{ eventid: string }> }) => {
         })),
         package_details: packageToEdit.package_details?.map((detail) => ({
           title: detail.title,
-          subtitles: detail.subtitle || [],
+          subtitles: detail.subtitles || [],
         })),
         bill_details: packageToEdit.bill_details?.map((detail) => ({
           type: detail.type,
@@ -331,7 +331,7 @@ const PackagesPage = ({ params }: { params: Promise<{ eventid: string }> }) => {
                     Add More
                   </Button>
                 </div>
-                {form.watch("card_details")?.map((card, index) => (
+                {form.watch("card_details")?.map((_, index) => (
                   <div key={index} className="grid grid-cols-2 gap-4">
                     <FormField
                       control={control}
@@ -404,7 +404,7 @@ const PackagesPage = ({ params }: { params: Promise<{ eventid: string }> }) => {
                         Remove
                       </Button>
                     </div>
-                    {detail.subtitles?.map((subtitle, subtitleIndex) => (
+                    {detail.subtitles?.map((_, subtitleIndex) => (
                       <div key={subtitleIndex} className="flex gap-2 ml-4">
                         <FormField
                           control={control}

@@ -124,7 +124,7 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`absolute lg:relative bg-white z-30 border-r bg-alice-900 text-black h-screen pt-8 ${
+      className={`absolute lg:relative bg-white z-30 border-r bg-alice-900 text-black h-full pt-8 ${
         isShowSidebar ? "w-[20em] shadow-lg" : "w-0"
       } overflow-hidden duration-300`}
     >

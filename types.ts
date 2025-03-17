@@ -32,7 +32,7 @@ export interface CardDetailType {
 
 export interface PackageDetailType {
   title: string;
-  subtitle: string[];
+  subtitles: string[];
 }
 
 export interface BillDetailType {

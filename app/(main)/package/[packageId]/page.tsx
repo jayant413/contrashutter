@@ -102,7 +102,7 @@ const PackageDetails = () => {
                         {detail.title}
                       </h3>
                       <ul className="list-disc list-inside space-y-1">
-                        {detail.subtitle.map(
+                        {detail.subtitles.map(
                           (subtitle: string, subIndex: number) => (
                             <li key={subIndex} className="text-gray-600">
                               {subtitle}
