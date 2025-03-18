@@ -79,8 +79,7 @@ const PackageDetails = () => {
                     <div key={index} className="flex items-center gap-3">
                       <div className="w-2 h-2 bg-primary rounded-full"></div>
                       <span className="text-gray-700">
-                        {card.product_name}{" "}
-                        {card.quantity > 1 && `(${card.quantity})`}
+                        {card.product_name} {`(${card.quantity})`}
                       </span>
                     </div>
                   )
