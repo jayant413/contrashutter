@@ -14,7 +14,11 @@ const nextConfig = {
         protocol: "https",
         hostname: "images.unsplash.com", // Added Unsplash hostname
       },
-    ], // Allow images from localhost, github.com, and images.unsplash.com
+      {
+        protocol: "https",
+        hostname: "contrashutter-backend.onrender.com", // Added new domain
+      },
+    ], // Allow images from localhost, github.com, images.unsplash.com, and contrashutter-backend.onrender.com
     minimumCacheTTL: 0,
   },
 };
