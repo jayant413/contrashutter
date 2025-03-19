@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import axios from "axios";
 import { apiEndpoint, imageEndpoint } from "@/helper/api";
+import Link from "next/link";
 
 const Hero = () => {
   const [banners, setBanners] = useState<{ url: string; index: number }[]>([]);
@@ -64,6 +65,9 @@ const Hero = () => {
       >
         {banners.map((banner, index) => (
           <div key={index} className="w-full h-[50vh] flex-shrink-0 relative">
+            <Link href={banner.url} className="absolute top-0 left-0">
+              {imageEndpoint}/{banner.url}
+            </Link>
             <Image
               src={`${imageEndpoint}/${banner.url}`}
               alt={`Banner ${banner.index}`}
