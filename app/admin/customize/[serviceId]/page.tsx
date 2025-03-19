@@ -176,6 +176,8 @@ const CustomizeServicePage = ({
                       <Image
                         src={imagePreview}
                         alt="Preview"
+                        width={100}
+                        height={100}
                         className="max-w-md h-auto rounded-lg shadow-md "
                       />
                     </>
@@ -185,6 +187,8 @@ const CustomizeServicePage = ({
                         Current image URL: {getImageUrl(editingEvent.image)}
                       </p>
                       <Image
+                        width={100}
+                        height={100}
                         src={getImageUrl(editingEvent.image)}
                         alt="Current Event Image"
                         className="max-w-md h-auto rounded-lg shadow-md"

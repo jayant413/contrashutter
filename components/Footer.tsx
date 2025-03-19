@@ -13,6 +13,8 @@ const Footer = () => {
         <div className="flex flex-col gap-4">
           <Image
             src={logo}
+            width={100}
+            height={100}
             alt="Contrashutter Logo"
             className="h-20 w-20 object-contain mx-auto md:mx-0"
           />

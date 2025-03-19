@@ -12,7 +12,13 @@ const Festival = () => {
           Golden Photography Package
         </h2>
         <div className="h-44 bg-white flex items-center justify-center  rounded-sm shadow-inner text-xs">
-          <Image className="h-44 w-auto" src={fest} alt={""} />
+          <Image
+            className="h-44 w-auto"
+            src={fest}
+            width={100}
+            height={100}
+            alt={""}
+          />
         </div>
         {/* <Separator className="bg-blue-500 h-1 my-2" /> */}
         {/* <div className="text-left p-2">

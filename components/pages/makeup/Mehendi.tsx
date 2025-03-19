@@ -12,7 +12,13 @@ const Mehendi = () => {
           Mehendi and Beauty
         </h2>
         <div className="h-44 bg-white flex items-center justify-center rounded-sm shadow-inner text-xs">
-          <Image className="h-44 w-auto" src={mehendi} alt={""} />
+          <Image
+            className="h-44 w-auto"
+            width={100}
+            height={100}
+            src={mehendi}
+            alt={""}
+          />
         </div>
 
         {/* <Separator className="bg-blue-500 h-1 my-2" /> */}

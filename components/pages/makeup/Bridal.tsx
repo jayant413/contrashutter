@@ -12,7 +12,13 @@ const Bridal = () => {
           Bridal Pack
         </h2>
         <div className="h-44 bg-white flex items-center justify-center  rounded-sm shadow-inner text-xs">
-          <Image className="h-44 w-auto" src={bridal} alt={""} />
+          <Image
+            className="h-44 w-auto"
+            width={100}
+            height={100}
+            src={bridal}
+            alt={""}
+          />
         </div>
         {/* <Separator className="bg-[#ddbe61] h-1 my-2" />
                 <div className="text-left p-2">

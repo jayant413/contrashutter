@@ -182,9 +182,7 @@ const PackagesPage = () => {
                 </CardFooter>
               </Card>
             ))
-          : [1, 2, 3].map((item) => (
-              <Skeleton className="w-full h-[25em]" key={item} />
-            ))}
+          : null}
       </div>
     </div>
   );

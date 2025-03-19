@@ -12,7 +12,13 @@ const Birthday = () => {
           Birthday Pack
         </h2>
         <div className="h-44 bg-white flex items-center justify-center  rounded-sm shadow-inner text-xs">
-          <Image className="h-44 w-auto" src={birth} alt={""} />
+          <Image
+            className="h-44 w-auto"
+            width={100}
+            height={100}
+            src={birth}
+            alt={""}
+          />
         </div>
 
         <div className="flex-col space-y-2 mt-[2em]">
