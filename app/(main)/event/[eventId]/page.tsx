@@ -18,7 +18,6 @@ import {
 import { Separator } from "@/components/ui/separator";
 import Store from "@/helper/store";
 import { PackageType } from "@/types";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { websiteUrl } from "@/helper/api";
 import SectionTitle from "@/components/custom/SectionTitle";
