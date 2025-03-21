@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import axios from "axios";
 import { apiEndpoint, imageEndpoint } from "@/helper/api";
-import Link from "next/link";
 
 const Hero = () => {
   const [banners, setBanners] = useState<{ url: string; index: number }[]>([]);
@@ -57,17 +56,20 @@ const Hero = () => {
   }
 
   return (
-    <div className="relative w-full h-[50vh] overflow-hidden">
+    <div className="relative w-full h-fit overflow-hidden">
       {/* Slides */}
       <div
         className="flex transition-transform duration-700"
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
         {banners.map((banner, index) => (
-          <div key={index} className="w-full h-[50vh] flex-shrink-0 relative">
-            <Link href={banner.url} className="absolute top-0 left-0">
+          <div
+            key={index}
+            className="w-full h-[13em] sm:h-[20em] md:h-[25em] lg:h-[27.5em] xl:h-[30em] 2xl:h-[38em] flex-shrink-0 relative"
+          >
+            {/* <Link href={banner.url} className="absolute top-0 left-0">
               {imageEndpoint}/{banner.url}
-            </Link>
+            </Link> */}
             <Image
               src={`${imageEndpoint}/${banner.url}`}
               alt={`Banner ${banner.index}`}

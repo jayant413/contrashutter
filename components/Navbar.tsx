@@ -148,7 +148,7 @@ const Navbar = () => {
         </div>
         <Link
           href="/"
-          className="flex items-center space-x-2 sm:space-x-4"
+          className="flex items-center space-x-2 sm:space-x-4 select-none"
           onClick={() => setActiveService(null)}
         >
           <Image

@@ -158,7 +158,7 @@ const PackageDetails = () => {
           <Button
             variant="outline"
             disabled
-            className=" bg-primaryBlue hover:bg-primaryBlue text-white hover:text-white hover:opacity-80"
+            className="hidden bg-primaryBlue hover:bg-primaryBlue text-white hover:text-white hover:opacity-80"
           >
             Get Quotation
           </Button>
