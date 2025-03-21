@@ -41,7 +41,7 @@ const Hero = () => {
 
   if (isLoading) {
     return (
-      <div className="relative w-full h-[13em] sm:h-[20em] md:h-[25em] lg:h-[27.5em] xl:h-[30em] 2xl:h-[38em] bg-gray-200 animate-pulse flex items-center justify-center">
+      <div className="relative w-full h-[13em] sm:h-[20em] md:h-[25em] lg:h-[25em]  bg-gray-200 animate-pulse flex items-center justify-center">
         <p className="text-gray-500">Loading...</p>
       </div>
     );
@@ -49,7 +49,7 @@ const Hero = () => {
 
   if (banners.length === 0) {
     return (
-      <div className="relative w-full h-[13em] sm:h-[20em] md:h-[25em] lg:h-[27.5em] xl:h-[30em] 2xl:h-[38em] bg-gray-100 flex items-center justify-center">
+      <div className="relative w-full h-[13em] sm:h-[20em] md:h-[25em] lg:h-[25em]  bg-gray-100 flex items-center justify-center">
         <p className="text-gray-500">No banners available</p>
       </div>
     );
@@ -65,13 +65,14 @@ const Hero = () => {
         {banners.map((banner, index) => (
           <div
             key={index}
-            className="w-full h-[13em] sm:h-[20em] md:h-[25em] lg:h-[27.5em] xl:h-[30em] 2xl:h-[38em] flex-shrink-0 relative"
+            className="w-full h-[13em] sm:h-[20em] md:h-[25em] lg:h-[25em]  flex-shrink-0 relative"
           >
             <Image
               src={`${imageEndpoint}/${banner.url}`}
               alt={`Banner ${banner.index}`}
-              fill
-              className="object-cover"
+              width={400} // Set fixed dimensions
+              height={200}
+              className="object-cover w-full h-full"
               priority={index === 0}
             />
           </div>
