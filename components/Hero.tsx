@@ -70,9 +70,8 @@ const Hero = () => {
             <Image
               src={`${imageEndpoint}/${banner.url}`}
               alt={`Banner ${banner.index}`}
-              width={500}
-              height={500}
-              className="object-cover w-full h-full"
+              fill
+              className="object-cover"
               priority={index === 0}
             />
           </div>
