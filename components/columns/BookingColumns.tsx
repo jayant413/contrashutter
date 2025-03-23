@@ -39,6 +39,8 @@ const GetBookingColumns = () => {
                     ? `/admin/bookings/${booking._id}`
                     : user?.role == "Client"
                     ? `/client/my-bookings/${booking._id}`
+                    : user?.role == "Service Provider"
+                    ? `/partner/bookings/${booking._id}`
                     : "/"
                 }`}
               >

@@ -123,7 +123,7 @@ export function BookingForm() {
 
   const { activeEvent } = Store.useEvent();
   const { setActiveService, activeService } = Store.useService();
-  const { user, addNotification } = Store.useAuth();
+  const { user, addNotification, checkLogin } = Store.useAuth();
   const { activePackage } = Store.usePackage();
 
   const form = useForm<BookingFormType>({
@@ -248,8 +248,16 @@ export function BookingForm() {
                   redirectPath: `/admin/bookings/${bookingResponse.data._id}`,
                 };
                 await addNotification([notification]);
+                const userNotification = {
+                  title: `Booking Confirmation`,
+                  message: `Your booking has been confirmed`,
+                  redirectPath: `/client/my-bookings/${bookingResponse.data._id}`,
+                  receiverId: user._id,
+                };
+                await addNotification([userNotification]);
 
                 toast.success("Payment Done Successfully");
+                checkLogin();
                 router.push("/");
                 setActiveService(null);
                 form.reset();

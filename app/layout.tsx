@@ -31,7 +31,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} relative antialiased flex flex-col min-h-screen`}
       >
-        <Toaster />
+        <Toaster position="top-center" />
         <Navbar />
         <main className="relative flex h-[89.5vh] overflow-hidden">
           <Overlay />

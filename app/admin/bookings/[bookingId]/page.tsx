@@ -142,6 +142,84 @@ export default function BookingDetailsPage() {
     <div className="grid grid-cols-2 gap-4 p-[2em]">
       <SectionTitle title="Booking Details" className="col-span-2 " />
 
+      {/* Booking Number */}
+      <section className="col-span-2 border-b pb-4">
+        <div className="text-2xl font-semibold mb-4 text-primaryBlue">
+          Booking Number:{" "}
+          <span className="text-primaryOrange">{booking?.booking_no}</span>
+        </div>
+      </section>
+
+      {/* Package Details */}
+      <section className="col-span-2 border-b pb-4">
+        <h2 className="text-2xl font-semibold mb-4 text-primaryBlue">
+          Package Details
+        </h2>
+        <div className="grid grid-cols-1 gap-4">
+          <div>
+            <strong>Package Name:</strong>{" "}
+            <span className="text-gray-700">
+              {booking?.package_details?.name}
+            </span>
+          </div>
+          <div>
+            <strong>Price:</strong>{" "}
+            <span className="text-gray-700">
+              ₹{booking?.package_details?.price}
+            </span>
+          </div>
+
+          {booking?.package_details?.card_details &&
+            booking.package_details.card_details.length > 0 && (
+              <div>
+                <strong>Package Inclusions:</strong>
+                <ul className="list-disc ml-6 mt-2">
+                  {booking.package_details.card_details.map((card, index) => (
+                    <li key={index} className="text-gray-700">
+                      {card.product_name} - Quantity: {card.quantity}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+          {booking?.package_details?.package_details &&
+            booking.package_details.package_details.length > 0 && (
+              <div>
+                <strong>Package Details:</strong>
+                {booking.package_details.package_details.map(
+                  (detail, index) => (
+                    <div key={index} className="mt-2">
+                      <div className="font-medium">{detail.title}</div>
+                      <ul className="list-disc ml-6">
+                        {detail.subtitles &&
+                          detail.subtitles.map((subtitle, subIndex) => (
+                            <li key={subIndex} className="text-gray-700">
+                              {subtitle}
+                            </li>
+                          ))}
+                      </ul>
+                    </div>
+                  )
+                )}
+              </div>
+            )}
+
+          {booking?.package_details?.bill_details &&
+            booking.package_details.bill_details.length > 0 && (
+              <div>
+                <strong>Bill Breakdown:</strong>
+                <ul className="list-disc ml-6 mt-2">
+                  {booking.package_details.bill_details.map((bill, index) => (
+                    <li key={index} className="text-gray-700">
+                      {bill.type}: ₹{bill.amount}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+        </div>
+      </section>
       {/* Status Change Section - Only visible to Admin */}
       {user?.role === "Admin" && (
         <section className="col-span-2 border-b pb-4">
