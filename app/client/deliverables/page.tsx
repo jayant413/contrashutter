@@ -132,6 +132,15 @@ const Deliverables = () => {
     }
   };
 
+  // Load Razorpay dynamically
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () => console.log("Razorpay script loaded");
+    document.body.appendChild(script);
+  }, []);
+
   return (
     <div className="p-6">
       <div className="flex gap-4 mb-6">

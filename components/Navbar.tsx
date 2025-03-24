@@ -44,13 +44,6 @@ import { Badge } from "./ui/badge";
 import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { cn } from "@/lib/utils";
 import { imageEndpoint } from "@/helper/api";
-import { toast } from "sonner";
-
-// const navLinks = [
-//   { path: "/", label: "Home" },
-//   { path: "/about", label: "About Us" },
-//   { path: "/contact", label: "Contact Us" },
-// ];
 
 const Navbar = () => {
   const { checkLogin, logout, user, readNotification, clearNotifications } =

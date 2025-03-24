@@ -23,10 +23,8 @@ export default function BookingDetailsPage() {
   const handleBalancePayment = async () => {
     if (!booking) return;
 
-    const dueAmount = booking.payment_details.dueAmount;
-
     startPayment(async () => {
-      const paymentAmount = dueAmount / 2;
+      const paymentAmount = booking.payment_details.payablePrice * 0.4;
       try {
         const { data } = await axios.post(
           `${apiEndpoint}/payment/create-order`,
@@ -63,10 +61,8 @@ export default function BookingDetailsPage() {
                   {
                     payment_details: {
                       ...booking.payment_details,
-                      paidAmount:
-                        booking.payment_details.paidAmount + paymentAmount,
-                      dueAmount:
-                        booking.payment_details.dueAmount - paymentAmount,
+                      paidAmount: booking.payment_details.payablePrice * 0.7,
+                      dueAmount: booking.payment_details.payablePrice * 0.3,
                       paymentStatus: "Partial",
                       razorpayOrderId: data.id,
                       razorpayPaymentId: response.razorpay_payment_id,

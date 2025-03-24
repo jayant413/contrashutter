@@ -31,6 +31,7 @@ const PackagesPage = () => {
   const { getService } = Store.useService();
   const { activeEvent, getEvent } = Store.useEvent();
   const { addToWishlist } = Store.useAuth();
+  const { isShowSidebar } = Store.useMain();
 
   useEffect(() => {
     if (eventId) {
@@ -46,10 +47,16 @@ const PackagesPage = () => {
   }, [activeEvent, getService]);
 
   return (
-    <div className="container mx-auto p-8">
+    <div className=" mx-auto p-8 ">
       <SectionTitle title={`${activeEvent?.eventName} Packages`} />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div
+        className={`grid grid-cols-1 sm:grid-cols-2  gap-6 ${
+          isShowSidebar
+            ? "lg:grid-cols-2  xl:grid-cols-3"
+            : "lg:grid-cols-3  xl:grid-cols-4"
+        }`}
+      >
         {packages
           ? packages?.map((pkg, index) => (
               <Card key={index} className="relative">

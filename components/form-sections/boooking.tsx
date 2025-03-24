@@ -166,10 +166,14 @@ export function BookingForm() {
       toast.error("Package not found");
       return;
     }
-
     const installmentType = Number(values.payment_details.paymentType);
     const totalPrice = activePackage.price;
-    const installmentAmount = Math.ceil(totalPrice / installmentType);
+    const installmentAmount =
+      installmentType === 1
+        ? totalPrice
+        : installmentType === 3
+        ? Math.ceil(totalPrice * 0.3)
+        : Math.ceil(totalPrice / installmentType);
 
     const payload = {
       ...values,

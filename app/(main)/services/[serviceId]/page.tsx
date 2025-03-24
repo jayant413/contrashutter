@@ -27,6 +27,7 @@ const EventsPage = () => {
   const [events, setEvents] = useState<EventType[] | null>(null);
   const { activeService, getService } = Store.useService();
   const { getEvent } = Store.useEvent();
+  const { isShowSidebar } = Store.useMain();
 
   useEffect(() => {
     if (activeService) {
@@ -43,14 +44,20 @@ const EventsPage = () => {
   const images = [corporate, birth, wedding]; // Array of images
 
   return (
-    <div className="max-w-6xl mx-auto bg-white overflow-hidden my-3 p-6 min-h-[70vh]">
+    <div className="mx-auto bg-white overflow-hidden my-3 p-6 min-h-[70vh]">
       {events ? (
         events.length === 0 ? (
           <p className="text-center text-lg font-semibold">
             No events available
           </p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-4">
+          <div
+            className={`grid grid-cols-1 sm:grid-cols-2  gap-8 mt-4 w-full ${
+              isShowSidebar
+                ? "lg:grid-cols-2  xl:grid-cols-3"
+                : "lg:grid-cols-3  xl:grid-cols-4"
+            }`}
+          >
             {events.map((event, index) => (
               <Card
                 key={event._id}

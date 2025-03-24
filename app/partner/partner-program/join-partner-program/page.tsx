@@ -44,7 +44,7 @@ export default function ServicePartnerAgreement() {
   const router = useRouter();
   const [isChecked, setIsChecked] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { user } = Store.useAuth();
+  const { user, checkLogin } = Store.useAuth();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -73,6 +73,7 @@ export default function ServicePartnerAgreement() {
       });
 
       toast.success("Request sent successfully, please wait for approval.");
+      checkLogin();
       router.push("/partner/partner-program"); // Redirect after successful submission
     } catch (error) {
       toast.error("Something went wrong, please try again later.");
