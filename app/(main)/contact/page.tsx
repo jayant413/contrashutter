@@ -16,9 +16,9 @@ export default function ContactPage() {
         </p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8 items-start">
+      <div className="grid md:grid-cols-2 gap-8 items-start h-fit">
         {/* Contact Form */}
-        <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-md">
+        <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-md h-full">
           <h2 className="text-2xl font-bold mb-6 text-primaryOrange">
             Send Us a Message
           </h2>
@@ -26,7 +26,7 @@ export default function ContactPage() {
         </div>
 
         {/* Contact Information */}
-        <div className="space-y-8">
+        <div className="space-y-8 h-full">
           <div className="relative h-[300px] rounded-xl overflow-hidden">
             <Image
               src="/placeholder.svg?height=600&width=800"
@@ -83,31 +83,31 @@ export default function ContactPage() {
               </div>
             </div>
           </div>
+        </div>
+      </div>
 
-          <div className="bg-primaryBlue/5 dark:bg-primaryBlue/20 p-6 rounded-xl shadow-md border border-primaryBlue/20">
-            <h3 className="text-xl font-bold mb-4 text-primaryBlue dark:text-blue-300">
-              Business Hours
-            </h3>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span>Monday - Friday</span>
-                <span>9:00 AM - 6:00 PM</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Saturday</span>
-                <span>10:00 AM - 4:00 PM</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Sunday</span>
-                <span>Closed</span>
-              </div>
-            </div>
+      <div className="mt-8 bg-primaryBlue/5 dark:bg-primaryBlue/20 p-6 rounded-xl shadow-md border border-primaryBlue/20">
+        <h3 className="text-xl font-bold mb-4 text-primaryBlue dark:text-blue-300">
+          Business Hours
+        </h3>
+        <div className="space-y-2">
+          <div className="flex justify-between">
+            <span>Monday - Friday</span>
+            <span>9:00 AM - 6:00 PM</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Saturday</span>
+            <span>10:00 AM - 4:00 PM</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Sunday</span>
+            <span>Closed</span>
           </div>
         </div>
       </div>
 
       {/* Map Section */}
-      {/* <div className="mt-12 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md">
+      {/* <div className="mt-4 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md">
         <div className="relative h-[400px] rounded-lg overflow-hidden">
           <Image
             src="/placeholder.svg?height=800&width=1600"
