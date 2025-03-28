@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { FiShare2 } from "react-icons/fi";
 import { toast } from "sonner";
-import { Link2 } from "lucide-react";
+import { Heart, Link2, ListCheck, FileText, LucideZoomIn } from "lucide-react";
 
 // Project Imports
 import {
@@ -21,6 +21,7 @@ import { PackageType } from "@/types";
 import { Button } from "@/components/ui/button";
 import { websiteUrl } from "@/helper/api";
 import SectionTitle from "@/components/custom/SectionTitle";
+import { cn } from "@/lib/utils";
 
 const PackagesPage = () => {
   const router = useRouter();
@@ -30,7 +31,7 @@ const PackagesPage = () => {
   const { user } = Store.useAuth();
   const { getService } = Store.useService();
   const { activeEvent, getEvent } = Store.useEvent();
-  const { addToWishlist } = Store.useAuth();
+  const { addToWishlist, removeFromWishlist } = Store.useAuth();
   const { isShowSidebar } = Store.useMain();
 
   useEffect(() => {
@@ -59,9 +60,12 @@ const PackagesPage = () => {
       >
         {packages
           ? packages?.map((pkg, index) => (
-              <Card key={index} className="relative">
+              <Card
+                key={index}
+                className="relative flex flex-col justify-between"
+              >
                 <CardHeader className="space-y-0 pb-2">
-                  <CardTitle className="text-gray-800 text-md">
+                  <CardTitle className="text-gray-800 text-md line-clamp-1">
                     {pkg.name}
                   </CardTitle>
                   <span
@@ -102,7 +106,7 @@ const PackagesPage = () => {
                 <CardContent className="space-y-4">
                   <Separator />
 
-                  <div className="space-y-2">
+                  <div className="space-y-2 h-[10em] overflow-y-auto">
                     <div className="flex justify-between">
                       <span className="text-gray-700 font-bold">Name</span>
                       <span className="text-gray-700 font-bold">Quantity</span>
@@ -141,9 +145,9 @@ const PackagesPage = () => {
                   >
                     <Button
                       variant="outline"
-                      className="w-full hover:bg-primaryBlue hover:text-white"
+                      className="w-full hover:bg-primaryBlue hover:text-white flex items-center"
                     >
-                      View Details
+                      <LucideZoomIn className="mr-2 h-4 w-4" /> View Details
                     </Button>
                   </Link>
                   <Button
@@ -151,10 +155,10 @@ const PackagesPage = () => {
                     className="w-full hover:bg-primaryBlue hover:text-white"
                     disabled
                   >
-                    Get Quotation
+                    <FileText className="mr-2 h-4 w-4" /> Get Quotation
                   </Button>
                   <Link
-                    href={!user ? "/sign-in" : `/package/${pkg._id}/booking`}
+                    href={!user ? "/login" : `/package/${pkg._id}/booking`}
                     className="w-full flex justify-end"
                     onClick={() => {
                       if (!user) {
@@ -166,24 +170,52 @@ const PackagesPage = () => {
                       variant="outline"
                       className="w-full hover:bg-primaryBlue hover:text-white"
                     >
-                      Book Now
+                      <ListCheck className="mr-2 h-4 w-4" /> Book Now
                     </Button>
                   </Link>
 
                   <Button
                     variant="outline"
-                    className="w-full hover:bg-primaryBlue hover:text-white"
+                    className={cn(
+                      "w-full  hover:text-white",
+                      user?.wishlist.find(
+                        (packageInfo) => packageInfo._id === pkg._id
+                      )
+                        ? "bg-red-500 hover:bg-red-400 text-white"
+                        : "hover:bg-primaryBlue"
+                    )}
                     title="Add to Cart"
                     onClick={() => {
                       if (user && pkg._id) {
-                        addToWishlist(pkg._id);
+                        if (
+                          user?.wishlist.find(
+                            (packageInfo) => packageInfo._id === pkg._id
+                          )
+                        ) {
+                          removeFromWishlist(pkg._id);
+                        } else {
+                          addToWishlist(pkg._id);
+                        }
                       } else {
-                        router.push("/sign-in");
+                        router.push("/login");
                         toast.error("Please login to add in wishlist");
                       }
                     }}
                   >
-                    Add To Wishlist
+                    {user?.wishlist.find(
+                      (packageInfo) => packageInfo._id === pkg._id
+                    ) ? (
+                      <span className="text-white flex items-center">
+                        {" "}
+                        <Heart className={`mr-2 h-4 w-4 fill-white`} />{" "}
+                        Wishlisted
+                      </span>
+                    ) : (
+                      <span className=" flex items-center">
+                        {" "}
+                        <Heart className={`mr-2 h-4 w-4`} /> Add To Wishlist
+                      </span>
+                    )}
                   </Button>
                 </CardFooter>
               </Card>

@@ -214,16 +214,16 @@ const Navbar = () => {
             </Button>
           </Link>
           {!user && (
-            <Link href="/sign-in">
+            <Link href="/login">
               <Button
                 variant="ghost"
                 className={`${
-                  pathname === "/sign-in"
+                  pathname === "/login"
                     ? "text-primaryBlue font-semibold bg-gray-100"
                     : "hover:text-primaryBlue/80"
                 } transition duration-300`}
               >
-                Sign In
+                Log In
               </Button>
             </Link>
           )}
@@ -267,7 +267,7 @@ const Navbar = () => {
                 </Button>
               </Link>
 
-              <Link href="/sign-in" onClick={() => setMobileMenuOpen(false)}>
+              <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
                 <Button variant="ghost" className="w-full justify-start">
                   Sign In
                 </Button>
@@ -357,7 +357,7 @@ const Navbar = () => {
                       </MenubarItem>
                     </Link>
                     <MenubarSeparator />
-                    <Link href="/sign-in">
+                    <Link href="/login">
                       <MenubarItem
                         className="flex items-center"
                         onClick={() => {
@@ -429,7 +429,7 @@ const Navbar = () => {
                       <PhoneIcon className="mr-2 w-4  translate-y-[0.1em] " />{" "}
                       Contact Us
                     </>
-                  ) : pathname === "/sign-in" ? (
+                  ) : pathname === "/login" ? (
                     <>
                       <UserIcon className="mr-2 w-4  translate-y-[0.1em] " />{" "}
                       Sign In
@@ -484,7 +484,7 @@ const Navbar = () => {
                   </MenubarItem>
                 </Link>
                 <Link
-                  href="/sign-in"
+                  href="/login"
                   onClick={() => {
                     setActiveService(null);
                     setIsShowSidebar(false);

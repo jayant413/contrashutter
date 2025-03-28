@@ -6,15 +6,23 @@ import { Camera } from "lucide-react";
 import LoginForm from "@/components/login-form";
 import RegisterForm from "@/components/register-form";
 import Link from "next/link";
+import { useMain } from "@/helper/store";
+import { cn } from "@/lib/utils";
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
+  const { isShowSidebar } = useMain();
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="flex flex-col md:flex-row gap-8 items-center max-w-6xl mx-auto">
+    <div className=" mx-auto  px-4 py-12 ">
+      <div className="flex flex-col md:flex-row gap-4 xl:mx-[4em]">
         {/* Image Section */}
-        <div className="md:w-1/2 relative h-[600px] rounded-xl overflow-hidden hidden md:block">
+        <div
+          className={cn(
+            "md:w-1/2 relative h-[30em] rounded-xl overflow-hidden hidden md:block transition-all duration-200",
+            isShowSidebar ? "md:scale-90 " : "md:scale-100"
+          )}
+        >
           <Image
             src="/placeholder.svg?height=1200&width=800"
             alt="Photography services"
@@ -45,7 +53,7 @@ export default function LoginPage() {
 
         {/* Form Section */}
         <div className="md:w-1/2 w-full">
-          <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-md max-w-md mx-auto">
+          <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-md max-w-md mx-auto border-t">
             <div className="text-center mb-6">
               <div className="flex items-center justify-center gap-2 mb-4">
                 <Camera className="h-8 w-8 text-primaryOrange" />
@@ -84,7 +92,7 @@ export default function LoginPage() {
               </button>
             </div>
 
-            {isLogin ? <LoginForm /> : <RegisterForm />}
+            {isLogin ? <LoginForm setIsLogin={setIsLogin} /> : <RegisterForm />}
 
             <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 text-center text-sm text-gray-600 dark:text-gray-400">
               By continuing, you agree to our{" "}

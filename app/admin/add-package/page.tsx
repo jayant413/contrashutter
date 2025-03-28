@@ -105,7 +105,7 @@ const AddPackagePage = () => {
 
       getEvents();
     }
-  }, [form.watch("serviceId")]);
+  }, [form]);
 
   const onSubmit = async (data: z.infer<typeof packageSchema>) => {
     setLoading(true);

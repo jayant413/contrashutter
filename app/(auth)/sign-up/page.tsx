@@ -66,7 +66,7 @@ const Register = () => {
       const response = await axios.post(`${apiEndpoint}/auth/register`, data);
 
       if (response.status == 200) {
-        router.push("/sign-in"); // Redirect to login page on success
+        router.push("/login"); // Redirect to login page on success
         toast.success("Registered successfully");
       } else {
         console.log(response);
@@ -76,7 +76,7 @@ const Register = () => {
       if (isApiError(error)) {
         if (error.status == 409) {
           toast.info("Already registered please sign in");
-          router.push("/sign-in");
+          router.push("/login");
         }
         toast.error(error.response?.data.message || "An error occurred");
       }
@@ -196,7 +196,7 @@ const Register = () => {
           <div className="flex justify-between items-end">
             <p className=" text-sm text-gray-600">
               Already have an account?{" "}
-              <Link href="/sign-in" className="text-blue-500 hover:underline">
+              <Link href="/login" className="text-blue-500 hover:underline">
                 Sign In
               </Link>
             </p>

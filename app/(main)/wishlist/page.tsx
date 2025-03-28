@@ -138,7 +138,7 @@ const WhishList = () => {
                     Get Quotation
                   </Button>
                   <Link
-                    href={!user ? "/sign-in" : `/package/${pkg._id}/booking`}
+                    href={!user ? "/login" : `/package/${pkg._id}/booking`}
                     className="w-full flex justify-end"
                     onClick={() => {
                       if (!user) {
@@ -162,7 +162,7 @@ const WhishList = () => {
                       if (user && pkg._id) {
                         removeFromWishlist(pkg._id);
                       } else {
-                        router.push("/sign-in");
+                        router.push("/login");
                         toast.error("Please login to add in wishlist");
                       }
                     }}

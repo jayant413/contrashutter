@@ -2,31 +2,31 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import Image from "next/image";
-import Link from "next/link";
 
-import birth from "@/public/photography/birthday.jpeg"; // Local birthday image
-import corporate from "@/public/photography/corporate.jpeg"; // Local corporate image
-import wedding from "@/public/photography/wedding.jpeg"; // Local wedding image
-
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+// import birth from "@/public/photography/birthday.jpeg"; // Local birthday image
+// import corporate from "@/public/photography/corporate.jpeg"; // Local corporate image
+// import wedding from "@/public/photography/wedding.jpeg"; // Local wedding image
 import Store from "@/helper/store";
 import { EventType } from "@/types";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { imageEndpoint } from "@/helper/api";
+import EventCard from "@/components/event-card";
+
+// import {
+//   Card,
+//   CardContent,
+//   CardFooter,
+//   CardHeader,
+//   CardTitle,
+// } from "@/components/ui/card";
+// import { Button } from "@/components/ui/button";
+// import { imageEndpoint } from "@/helper/api";import Image from "next/image";
+// import Link from "next/link";
 
 const EventsPage = () => {
   const { serviceId } = useParams();
   const [events, setEvents] = useState<EventType[] | null>(null);
   const { activeService, getService } = Store.useService();
-  const { getEvent } = Store.useEvent();
+  // const { getEvent } = Store.useEvent();
   const { isShowSidebar } = Store.useMain();
 
   useEffect(() => {
@@ -41,7 +41,7 @@ const EventsPage = () => {
     }
   }, [serviceId, getService]);
 
-  const images = [corporate, birth, wedding]; // Array of images
+  // const images = [corporate, birth, wedding]; // Array of images
 
   return (
     <div className="mx-auto bg-white overflow-hidden my-3 p-6 min-h-[70vh]">
@@ -59,6 +59,9 @@ const EventsPage = () => {
             }`}
           >
             {events.map((event, index) => (
+              <EventCard key={event._id} event={event} index={index} />
+            ))}
+            {/* {events.map((event, index) => (
               <Card
                 key={event._id}
                 className="overflow-hidden shadow-lg transition-transform transform duration-200 hover:scale-105"
@@ -97,7 +100,7 @@ const EventsPage = () => {
                   </Link>
                 </CardFooter>
               </Card>
-            ))}
+            ))} */}
           </div>
         )
       ) : (
