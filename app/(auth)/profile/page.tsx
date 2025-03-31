@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import {
   Camera,
   Calendar,
@@ -27,7 +26,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import { apiEndpoint, imageEndpoint } from "@/helper/api";
 import { isApiError } from "@/types";
 import { toast } from "sonner";
@@ -92,7 +90,6 @@ export default function ProfilePage() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { checkLogin } = Store.useAuth();
-  const router = useRouter();
 
   // Fetch the user profile on component mount
   useEffect(() => {
