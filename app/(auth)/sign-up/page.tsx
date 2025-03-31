@@ -68,8 +68,6 @@ const Register = () => {
       if (response.status == 200) {
         router.push("/login"); // Redirect to login page on success
         toast.success("Registered successfully");
-      } else {
-        console.log(response);
       }
     } catch (error) {
       console.error("Fetch error:", error);

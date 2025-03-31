@@ -2,11 +2,13 @@
 import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { DataTable } from "@/components/ui/data-table";
-import SectionTitle from "@/components/custom/SectionTitle";
-import GetBookingColumns from "@/components/columns/BookingColumns";
 import useBooking from "@/helper/store/useBooking";
 import { BookingType } from "@/types";
+import BookingTable from "@/components/pages/booking/BookingsTable";
+
+/**
+ *  view detials , package name, status, venue city, event date, event start time, event end time,
+ */
 
 const ServiceBookings = () => {
   const { allBookings, getAllBookings } = useBooking();
@@ -55,8 +57,6 @@ const ServiceBookings = () => {
 
   return (
     <div className="p-[2em]">
-      <SectionTitle title="Service Bookings" hideBackButton />
-
       <div className="flex gap-4 mb-6">
         {statusButtons.map((button) => (
           <Button
@@ -74,7 +74,7 @@ const ServiceBookings = () => {
         ))}
       </div>
 
-      <DataTable columns={GetBookingColumns()} data={filteredBookings} />
+      <BookingTable bookings={filteredBookings || []} />
     </div>
   );
 };

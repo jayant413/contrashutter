@@ -3,20 +3,12 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { apiEndpoint } from "@/helper/api";
 import { BookingType, isApiError } from "@/types";
-import SectionTitle from "@/components/custom/SectionTitle";
-import { DataTable } from "@/components/ui/data-table";
-import GetBookingColumns from "@/components/columns/BookingColumns";
 import Store from "@/helper/store";
-
+import BookingTable from "../../../components/pages/booking/BookingsTable";
 export default function BookingList() {
   const [bookings, setBookings] = useState<BookingType[]>([]);
 
   const { user } = Store.useAuth();
-  useEffect(() => {
-    if (bookings) {
-      console.log(bookings);
-    }
-  }, [bookings]);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -49,8 +41,7 @@ export default function BookingList() {
 
   return (
     <div className="p-[2em]">
-      <SectionTitle title="My Bookings" hideBackButton />
-      <DataTable columns={GetBookingColumns()} data={bookings || []} />
+      <BookingTable bookings={bookings} />
     </div>
   );
 }

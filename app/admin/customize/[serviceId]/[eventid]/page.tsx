@@ -153,7 +153,6 @@ const PackagesPage = ({ params }: { params: Promise<{ eventid: string }> }) => {
   }, [packageToEdit, form, events, services]);
 
   const onSubmit = async (data: z.infer<typeof packageSchema>) => {
-    console.log(data);
     if (!packageToEdit) {
       return;
     }

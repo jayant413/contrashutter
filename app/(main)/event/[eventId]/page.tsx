@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { FiShare2 } from "react-icons/fi";
 import { toast } from "sonner";
-import { Heart, Link2, ListCheck, FileText, LucideZoomIn } from "lucide-react";
+import { Heart, Link2, ListCheck, FileText, ExternalLink } from "lucide-react";
 
 // Project Imports
 import {
@@ -147,7 +147,7 @@ const PackagesPage = () => {
                       variant="outline"
                       className="w-full hover:bg-primaryBlue hover:text-white flex items-center"
                     >
-                      <LucideZoomIn className="mr-2 h-4 w-4" /> View Details
+                      <ExternalLink className="mr-2 h-4 w-4" /> View Details
                     </Button>
                   </Link>
                   <Button

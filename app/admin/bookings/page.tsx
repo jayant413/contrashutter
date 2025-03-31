@@ -1,12 +1,10 @@
 "use client";
-import { DataTable } from "@/components/ui/data-table";
-import SectionTitle from "@/components/custom/SectionTitle";
 import React, { useEffect, useState } from "react";
 import Store from "@/helper/store";
-import GetBookingColumns from "@/components/columns/BookingColumns";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { BookingType } from "@/types";
+import BookingTable from "@/components/pages/booking/BookingsTable";
 
 const Bookings = () => {
   const { allBookings, getAllBookings } = Store.useBooking();
@@ -50,8 +48,6 @@ const Bookings = () => {
 
   return (
     <div className="p-[2em]">
-      <SectionTitle title="All Bookings" hideBackButton />
-
       <div className="flex gap-4 mb-6 flex-wrap">
         {statusButtons.map((button) => (
           <Button
@@ -65,7 +61,7 @@ const Bookings = () => {
         ))}
       </div>
 
-      <DataTable columns={GetBookingColumns()} data={filteredBookings || []} />
+      <BookingTable bookings={filteredBookings || []} />
     </div>
   );
 };
