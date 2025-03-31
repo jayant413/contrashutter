@@ -100,7 +100,7 @@
 //   };
 
 //   return (
-//     <div className="container mx-auto px-4 py-12">
+//     <div className=" mx-auto px-4 py-12">
 //       <Tabs defaultValue="profile" className="max-w-4xl mx-auto">
 //         <TabsList className="grid grid-cols-3 mb-8">
 //           <TabsTrigger value="profile">Profile</TabsTrigger>

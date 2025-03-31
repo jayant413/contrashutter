@@ -111,7 +111,7 @@ export default function SupportForm({ apiEndpoint }: SupportFormProps) {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className=" mx-auto px-4 py-8">
       <div className="grid gap-8 md:grid-cols-3">
         <div className="md:col-span-2 space-y-8">
           <Card>
