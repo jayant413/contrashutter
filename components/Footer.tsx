@@ -25,13 +25,17 @@ const Footer = () => {
           </p>
           <div className="flex items-center gap-2">
             <Phone className="h-5 w-5 text-white" />
-            <span className="text-base font-bold text-white">9699008025</span>
+            <Link href="tel:+919699008025">
+              <span className="text-base font-bold text-white">9699008025</span>
+            </Link>
           </div>
           <div className="flex items-center gap-2">
             <Mail className="h-5 w-5 text-white" />
-            <span className="text-base font-bold text-white">
-              Contact.us@contrashutter.com
-            </span>
+            <Link href="mailto:contact.us@contrashutter.com">
+              <span className="text-base font-bold text-white">
+                contact.us@contrashutter.com
+              </span>
+            </Link>
           </div>
         </div>
 

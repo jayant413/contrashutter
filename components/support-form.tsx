@@ -35,6 +35,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import Link from "next/link";
 
 const schema = z.object({
   subject: z.string().min(3, "Subject must be at least 3 characters"),
@@ -62,6 +63,11 @@ const faqs = [
     question: "What if I need to reschedule my booking?",
     answer:
       "Please contact us at least 48 hours before your scheduled event. Rescheduling fees may apply depending on how close to the event date the change is requested.",
+  },
+  {
+    question: "What payment methods do you accept?",
+    answer:
+      "We accept various payment methods including credit cards, PayPal, and bank transfers. Please check our payment page for more details.",
   },
 ];
 
@@ -113,6 +119,7 @@ export default function SupportForm({ apiEndpoint }: SupportFormProps) {
   return (
     <div className=" mx-auto px-4 py-8">
       <div className="grid gap-8 md:grid-cols-3">
+        {/* Support Form */}
         <div className="md:col-span-2 space-y-8">
           <Card>
             <CardHeader className="bg-primaryBlue/5">
@@ -251,77 +258,81 @@ export default function SupportForm({ apiEndpoint }: SupportFormProps) {
             </CardContent>
           </Card>
         </div>
+        {/* FAQs */}
 
-        <div className="space-y-6">
-          <Card>
-            <CardHeader className="bg-primaryBlue/5">
-              <CardTitle>Frequently Asked Questions</CardTitle>
-            </CardHeader>
-            <CardContent className="p-4">
-              <div className="space-y-4">
-                {faqs.map((faq, index) => (
-                  <div
-                    key={index}
-                    className="border-b border-gray-200 dark:border-gray-700 pb-4 last:border-0 last:pb-0"
-                  >
-                    <h3 className="font-medium flex items-center gap-2">
-                      <HelpCircle className="h-4 w-4 text-primaryOrange" />
-                      {faq.question}
-                    </h3>
-                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                      {faq.answer}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="bg-primaryBlue/5">
-              <CardTitle>Contact Information</CardTitle>
-            </CardHeader>
-            <CardContent className="p-4">
-              <div className="space-y-3">
-                <div>
-                  <p className="font-medium">Email</p>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    support@contrashutter.com
+        <Card>
+          <CardHeader className="bg-primaryBlue/5">
+            <CardTitle>Frequently Asked Questions</CardTitle>
+          </CardHeader>
+          <CardContent className="p-4">
+            <div className="space-y-4">
+              {faqs.map((faq, index) => (
+                <div
+                  key={index}
+                  className="border-b border-gray-200 dark:border-gray-700 pb-4 last:border-0 last:pb-0"
+                >
+                  <h3 className="font-medium flex items-center gap-2">
+                    <HelpCircle className="h-4 w-4 text-primaryOrange" />
+                    {faq.question}
+                  </h3>
+                  <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                    {faq.answer}
                   </p>
                 </div>
-                <div>
-                  <p className="font-medium">Phone</p>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    +1 (555) 123-4567
-                  </p>
-                </div>
-                <div>
-                  <p className="font-medium">Hours</p>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Monday - Friday: 9AM - 6PM
-                  </p>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Contact Information */}
+
+        <Card className="md:col-span-2">
+          <CardHeader className="bg-primaryBlue/5">
+            <CardTitle>Contact Information</CardTitle>
+          </CardHeader>
+          <CardContent className="p-4">
+            <div className="space-y-3">
+              <div>
+                <p className="font-medium">Email</p>
+                <div className="text-gray-600 dark:text-gray-400">
+                  <Link href="mailto:contact.us@contrashutter.com">
+                    contact.us@contrashutter.com
+                  </Link>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-
-          <div className="relative h-48 rounded-lg overflow-hidden">
-            <Image
-              src="/placeholder.svg?height=400&width=600"
-              alt="Support team"
-              fill
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-primaryBlue/80 to-primaryBlue/30 flex items-center justify-center">
-              <div className="text-center text-white p-6">
-                <h3 className="text-xl font-bold mb-2">
-                  We&apos;re Here to Help
-                </h3>
-                <p>
-                  Our support team is ready to assist you with any questions or
-                  concerns
+              <div>
+                <p className="font-medium">Phone</p>
+                <div className="text-gray-600 dark:text-gray-400">
+                  <Link href="tel:+919699008025">+91 9699008025</Link>
+                </div>
+              </div>
+              <div>
+                <p className="font-medium">Hours</p>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Monday - Friday: 9AM - 6PM
                 </p>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Support Team Image */}
+        <div className="relative  rounded-lg overflow-hidden">
+          <Image
+            src="/placeholder.svg?height=400&width=600"
+            alt="Support team"
+            fill
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-primaryBlue/80 to-primaryBlue/30 flex items-center justify-center">
+            <div className="text-center text-white p-6">
+              <h3 className="text-xl font-bold mb-2">
+                We&apos;re Here to Help
+              </h3>
+              <p>
+                Our support team is ready to assist you with any questions or
+                concerns
+              </p>
             </div>
           </div>
         </div>
