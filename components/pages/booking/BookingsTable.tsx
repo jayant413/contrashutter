@@ -20,6 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { BookingType } from "@/types";
 import { ExternalLink } from "lucide-react";
+import Store from "@/helper/store";
 
 export default function BookingTable({
   bookings,
@@ -27,6 +28,7 @@ export default function BookingTable({
   bookings: BookingType[];
 }) {
   const [searchTerm, setSearchTerm] = useState("");
+  const { user } = Store.useAuth();
 
   const filteredBookings = bookings.filter(
     (booking: BookingType) =>
@@ -83,7 +85,15 @@ export default function BookingTable({
                     >
                       <TableCell>
                         <Link
-                          href={`/client/my-bookings/${booking._id}`}
+                          href={
+                            user?.role === "Admin"
+                              ? `/admin/bookings/${booking._id}`
+                              : user?.role === "Client"
+                              ? `/client/my-bookings/${booking._id}`
+                              : user?.role === "Service Provider"
+                              ? `/partner/bookings/${booking._id}`
+                              : "#"
+                          }
                           className="text-primaryBlue hover:text-primaryOrange font-medium"
                         >
                           <span className="text-primaryBlue hover:text-primaryOrange flex items-center">
@@ -94,7 +104,15 @@ export default function BookingTable({
                       </TableCell>
                       <TableCell>
                         <Link
-                          href={`/client/my-bookings/${booking._id}`}
+                          href={
+                            user?.role === "Admin"
+                              ? `/admin/bookings/${booking._id}`
+                              : user?.role === "Client"
+                              ? `/client/my-bookings/${booking._id}`
+                              : user?.role === "Service Provider"
+                              ? `/partner/my-bookings/${booking._id}`
+                              : "#"
+                          }
                           className="text-primaryBlue hover:text-primaryOrange font-medium"
                         >
                           {booking.booking_no}
