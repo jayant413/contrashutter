@@ -3,30 +3,15 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
-// import birth from "@/public/photography/birthday.jpeg"; // Local birthday image
-// import corporate from "@/public/photography/corporate.jpeg"; // Local corporate image
-// import wedding from "@/public/photography/wedding.jpeg"; // Local wedding image
 import Store from "@/helper/store";
 import { EventType } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import EventCard from "@/components/event-card";
 
-// import {
-//   Card,
-//   CardContent,
-//   CardFooter,
-//   CardHeader,
-//   CardTitle,
-// } from "@/components/ui/card";
-// import { Button } from "@/components/ui/button";
-// import { imageEndpoint } from "@/helper/api";import Image from "next/image";
-// import Link from "next/link";
-
 const EventsPage = () => {
   const { serviceId } = useParams();
   const [events, setEvents] = useState<EventType[] | null>(null);
   const { activeService, getService } = Store.useService();
-  // const { getEvent } = Store.useEvent();
   const { isShowSidebar } = Store.useMain();
 
   useEffect(() => {
@@ -40,8 +25,6 @@ const EventsPage = () => {
       getService(serviceId as string);
     }
   }, [serviceId, getService]);
-
-  // const images = [corporate, birth, wedding]; // Array of images
 
   return (
     <div className="mx-auto bg-white overflow-hidden my-3 p-6 min-h-[70vh]">
@@ -58,49 +41,9 @@ const EventsPage = () => {
                 : "lg:grid-cols-3  xl:grid-cols-4"
             }`}
           >
-            {events.map((event, index) => (
-              <EventCard key={event._id} event={event} index={index} />
+            {events.map((event) => (
+              <EventCard key={event._id} event={event} />
             ))}
-            {/* {events.map((event, index) => (
-              <Card
-                key={event._id}
-                className="overflow-hidden shadow-lg transition-transform transform duration-200 hover:scale-105"
-              >
-                <CardHeader className="bg-gradient-to-br from-primaryBlue to-primaryOrange/50 p-4">
-                  <CardTitle className="text-center text-white text-xl font-bold">
-                    {event.eventName}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-4">
-                  <div className="h-44 bg-white flex items-center justify-center rounded-md shadow-md overflow-hidden">
-                    <Image
-                      className="h-full w-full object-cover"
-                      src={
-                        event.image
-                          ? `${imageEndpoint}/${event.image}`
-                          : images[index] || birth
-                      } // Use images based on index
-                      alt={event.eventName}
-                      width={300}
-                      height={176}
-                    />
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-center pt-6">
-                  <Link
-                    href={`/event/${event._id}`}
-                    onClick={() => getEvent(event._id as string)}
-                  >
-                    <Button
-                      variant="outline"
-                      className="hover:bg-primaryBlue hover:text-white transition-colors"
-                    >
-                      View Packages
-                    </Button>
-                  </Link>
-                </CardFooter>
-              </Card>
-            ))} */}
           </div>
         )
       ) : (

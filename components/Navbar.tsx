@@ -43,7 +43,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "./ui/badge";
 import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { cn } from "@/lib/utils";
-import { imageEndpoint } from "@/helper/api";
 
 const Navbar = () => {
   const { checkLogin, logout, user, readNotification, clearNotifications } =
@@ -286,7 +285,7 @@ const Navbar = () => {
                       <AvatarImage
                         src={
                           user?.profileImage
-                            ? `${imageEndpoint}${user?.profileImage}`
+                            ? user?.profileImage
                             : "https://github.com/shadcn.png"
                         }
                       />

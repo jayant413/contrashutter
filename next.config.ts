@@ -18,6 +18,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "contrashutter-backend.onrender.com", // Added new domain
       },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com", // Added Cloudinary domain
+      },
     ], // Allow images from localhost, github.com, images.unsplash.com, and contrashutter-backend.onrender.com
     minimumCacheTTL: 0,
   },

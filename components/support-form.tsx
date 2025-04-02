@@ -97,8 +97,25 @@ export default function SupportForm({ apiEndpoint }: SupportFormProps) {
   const onSubmit = async (data: z.infer<typeof schema>) => {
     setIsPending(true);
     try {
-      const response = await axios.post(apiEndpoint, data, {
+      // Create FormData object
+      const formData = new FormData();
+
+      // Append form fields
+      formData.append("subject", data.subject);
+      formData.append("message", data.message);
+      formData.append("priority", data.priority);
+
+      // Append image file if exists
+      if (file) {
+        formData.append("image", file);
+      }
+
+      // Send request with FormData
+      const response = await axios.post(apiEndpoint, formData, {
         withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
 
       if (response.status !== 200) {

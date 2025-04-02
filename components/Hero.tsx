@@ -2,10 +2,18 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import axios from "axios";
-import { apiEndpoint, imageEndpoint } from "@/helper/api";
+import { apiEndpoint } from "@/helper/api";
+
+interface Banner {
+  _id: string;
+  url: string;
+  title: string;
+  subtitle: string;
+  index: number;
+}
 
 const Hero = () => {
-  const [banners, setBanners] = useState<{ url: string; index: number }[]>([]);
+  const [banners, setBanners] = useState<Banner[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -16,7 +24,7 @@ const Hero = () => {
         setIsLoading(true);
         const res = await axios.get(`${apiEndpoint}/banner`);
         const sortedBanners = res.data.banners.sort(
-          (a: { index: number }, b: { index: number }) => a.index - b.index
+          (a: Banner, b: Banner) => a.index - b.index
         );
         setBanners(sortedBanners);
       } catch (error) {
@@ -65,15 +73,30 @@ const Hero = () => {
         {banners.map((banner, index) => (
           <div
             key={index}
-            className="w-full h-[13em] sm:h-[20em] md:h-[25em] lg:h-[25em]  flex-shrink-0 relative"
+            className="w-full h-[13em] sm:h-[20em] md:h-[25em] lg:h-[25em] flex-shrink-0 relative"
           >
             <Image
-              src={`${imageEndpoint}/${banner.url}`}
-              alt={`Banner ${banner.index}`}
+              src={banner.url}
+              alt={banner.title || `Banner ${banner.index}`}
               fill
               className="object-cover"
               priority={index === 0}
             />
+            {(banner.title || banner.subtitle) && (
+              <div className="absolute inset-0 bg-gradient-to-t from-primaryBlue/80 to-primaryBlue/30 flex flex-col items-center justify-center text-white p-4">
+                {banner.title && (
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 text-center text-white">
+                    <span className="text-primaryOrange">Contrashutter:</span>{" "}
+                    {banner.title}
+                  </h2>
+                )}
+                {banner.subtitle && (
+                  <p className="text-sm sm:text-base md:text-xl lg:text-2xl mb-6 text-center">
+                    {banner.subtitle}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         ))}
       </div>

@@ -7,7 +7,6 @@ import Link from "next/link";
 import { apiEndpoint, imageEndpoint } from "@/helper/api";
 import Image from "next/image";
 import SectionTitle from "@/components/custom/SectionTitle";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { ServiceType, EventType } from "@/types";
@@ -20,6 +19,7 @@ const CustomizeServicePage = ({
   const [service, setService] = useState<ServiceType | null>(null);
   const [editingEvent, setEditingEvent] = useState<EventType | null>(null);
   const [editedEventName, setEditedEventName] = useState<string>("");
+  const [editedDescription, setEditedDescription] = useState<string>("");
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
   const router = useRouter();
@@ -40,6 +40,9 @@ const CustomizeServicePage = ({
 
   const getImageUrl = (imagePath: string) => {
     if (!imagePath) return "";
+    // If it's already a full URL (Cloudinary), return it as is
+    if (imagePath.startsWith("http")) return imagePath;
+    // Otherwise treat it as a local path
     const cleanPath = imagePath.replace(/^\/+/, "").replace(/\\/g, "/");
     return `${imageEndpoint}/${cleanPath}`;
   };
@@ -75,6 +78,7 @@ const CustomizeServicePage = ({
     } else {
       setEditingEvent(event);
       setEditedEventName(event.eventName);
+      setEditedDescription(event.description || "");
     }
   };
 
@@ -82,11 +86,18 @@ const CustomizeServicePage = ({
     setEditedEventName(e.target.value);
   };
 
+  const handleDescriptionChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setEditedDescription(e.target.value);
+  };
+
   const handleSubmitEventUpdate = async () => {
     if (editingEvent) {
       try {
         const formData = new FormData();
         formData.append("eventName", editedEventName);
+        formData.append("description", editedDescription);
         if (image) {
           formData.append("image", image);
         }
@@ -112,6 +123,7 @@ const CustomizeServicePage = ({
                 ? {
                     ...event,
                     eventName: editedEventName,
+                    description: editedDescription,
                     image: res.data.event.image,
                   }
                 : event
@@ -125,6 +137,7 @@ const CustomizeServicePage = ({
         }
       } catch (error) {
         console.error("Error updating event:", error);
+        toast.error("Failed to update event");
       }
     }
   };
@@ -133,139 +146,223 @@ const CustomizeServicePage = ({
     <div className="flex flex-col items-center min-h-screen py-10  p-10">
       <SectionTitle title={`Customize ${service?.name} Events`} />
       {service ? (
-        <div className="w-full p-6 bg-white ">
+        <div className="w-full p-6 bg-white rounded-lg shadow-sm">
           {editingEvent ? (
-            <div className="mb-4">
-              <h1 className="text-2xl font-bold mb-4">{service.name}</h1>
-              <h2 className="text-xl text-gray-700">
-                <Link
-                  href={`/admin/customize/${service._id}/${editingEvent._id}`}
-                >
-                  Editing Event: {editingEvent.eventName}
-                </Link>
-              </h2>
+            <div className="max-w-2xl mx-auto">
+              <div className="flex items-center gap-3 mb-6">
+                <h1 className="text-2xl font-bold text-gray-800">
+                  {service.name}
+                </h1>
+                <span className="text-gray-400">›</span>
+                <h2 className="text-xl text-gray-600">
+                  {editingEvent.eventName}
+                </h2>
+              </div>
 
-              <div className="mt-4 space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Event Name
-                  </label>
-                  <input
-                    type="text"
-                    value={editedEventName}
-                    onChange={handleEventNameChange}
-                    className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-                  />
-                </div>
+              <div className="space-y-5">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Event Name
+                    </label>
+                    <input
+                      type="text"
+                      value={editedEventName}
+                      onChange={handleEventNameChange}
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                    />
+                  </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Event Image
-                  </label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="mt-1 w-full"
-                  />
-                </div>
-
-                <div className="mt-4">
-                  {imagePreview ? (
-                    <>
-                      <Image
-                        src={imagePreview}
-                        alt="Preview"
-                        width={100}
-                        height={100}
-                        className="max-w-md h-auto rounded-lg shadow-md "
+                  <div className="row-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Event Image
+                    </label>
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="hidden"
+                        id="event-image"
                       />
-                    </>
-                  ) : editingEvent?.image ? (
-                    <>
-                      <p className="text-sm text-gray-500 mb-2">
-                        Current image URL: {getImageUrl(editingEvent.image)}
-                      </p>
+                      <label htmlFor="event-image" className="cursor-pointer">
+                        <div className="flex flex-col items-center justify-center space-y-2">
+                          <div className="p-2 rounded-full bg-blue-50">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="text-blue-500"
+                            >
+                              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"></path>
+                              <line x1="16" y1="5" x2="22" y2="5"></line>
+                              <line x1="19" y1="2" x2="19" y2="8"></line>
+                              <circle cx="9" cy="9" r="2"></circle>
+                              <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
+                            </svg>
+                          </div>
+                          <span className="text-sm text-gray-500">
+                            Click to browse or drag an image
+                          </span>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="md:col-span-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Description
+                    </label>
+                    <textarea
+                      value={editedDescription}
+                      onChange={handleDescriptionChange}
+                      className="w-full p-2 border border-gray-300 rounded-md min-h-[120px] focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                      placeholder="Enter event description (optional)"
+                    />
+                  </div>
+                </div>
+
+                {/* Image Preview */}
+                {(imagePreview || editingEvent?.image) && (
+                  <div className="mt-4">
+                    <h3 className="text-sm font-medium text-gray-700 mb-2">
+                      Image Preview
+                    </h3>
+                    <div className="relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
                       <Image
-                        width={100}
-                        height={100}
-                        src={getImageUrl(editingEvent.image)}
-                        alt="Current Event Image"
-                        className="max-w-md h-auto rounded-lg shadow-md"
+                        src={
+                          imagePreview ||
+                          (editingEvent?.image
+                            ? getImageUrl(editingEvent.image)
+                            : "")
+                        }
+                        alt="Event Image"
+                        width={400}
+                        height={200}
+                        className="w-full h-48 object-contain"
                         onError={(e) => {
                           console.error("Image failed to load:", e);
                         }}
                       />
-                    </>
-                  ) : (
-                    <p className="text-gray-500">No image uploaded</p>
-                  )}
-                </div>
+                    </div>
+                  </div>
+                )}
 
-                <div className="space-y-2">
-                  <button
-                    onClick={handleSubmitEventUpdate}
-                    className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
-                  >
-                    Update Event
-                  </button>
-                  <button
+                <div className="flex justify-end gap-3 pt-4">
+                  <Button
                     onClick={() => {
                       setEditingEvent(null);
                       setImage(null);
                       setImagePreview("");
                     }}
-                    className="mt-2 w-full bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded"
+                    variant="outline"
+                    size="sm"
                   >
                     Cancel
-                  </button>
+                  </Button>
+                  <Button onClick={handleSubmitEventUpdate} size="sm">
+                    Save Changes
+                  </Button>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-[2em] ">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {service.events.map((event) => (
                 <div
-                  className="flex justify-between items-center p-2 gap-2 relative"
                   key={event._id}
+                  className="bg-white border border-gray-100 rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
                 >
-                  <Link href={`/admin/customize/${service._id}/${event._id}`}>
-                    <Button
-                      variant="outline"
-                      className="relative w-[15em] h-[3em]"
-                    >
-                      {event.eventName}
-                      <Badge
-                        variant="outline"
-                        className="px-1 py-1 cursor-pointer absolute right-[-0.5em] bottom-[-1em] bg-gray-100"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
+                  <div className="relative h-36 w-full overflow-hidden rounded-t-lg bg-gray-100">
+                    {event.image ? (
+                      <Image
+                        src={getImageUrl(event.image)}
+                        alt={event.eventName}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center bg-gray-100">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="40"
+                          height="40"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="text-gray-300"
+                        >
+                          <rect
+                            width="18"
+                            height="18"
+                            x="3"
+                            y="3"
+                            rx="2"
+                            ry="2"
+                          ></rect>
+                          <circle cx="9" cy="9" r="2"></circle>
+                          <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
+                        </svg>
+                      </div>
+                    )}
+                  </div>
 
-                          router.push(
-                            `/admin/customize/${service._id}/${event._id}/form`
-                          );
-                        }}
+                  <div className="p-4">
+                    <h3 className="font-medium text-gray-900 mb-1">
+                      {event.eventName}
+                    </h3>
+                    {event.description && (
+                      <p className="text-gray-500 text-sm line-clamp-2 mb-3">
+                        {event.description}
+                      </p>
+                    )}
+
+                    <div className="flex justify-between items-center mt-2">
+                      <Link
+                        href={`/admin/customize/${service._id}/${event._id}`}
+                        className="text-sm text-blue-600 hover:text-blue-800"
                       >
-                        {event?.formId ? (
-                          <List className="text-[0.5rem]" />
-                        ) : (
-                          <ListPlus className="text-[0.5rem] " />
-                        )}
-                      </Badge>
-                      <Badge
-                        variant="outline"
-                        className="px-1 py-1 cursor-pointer absolute right-[-0.5em] top-[-1em] bg-gray-100"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleEditEventToggle(event);
-                        }}
-                      >
-                        <Pencil className="text-[0.5rem] " />
-                      </Badge>
-                    </Button>
-                  </Link>
+                        View Packages
+                      </Link>
+
+                      <div className="flex gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-gray-500"
+                          onClick={() =>
+                            router.push(
+                              `/admin/customize/${service._id}/${event._id}/form`
+                            )
+                          }
+                        >
+                          {event?.formId ? (
+                            <List className="h-4 w-4" />
+                          ) : (
+                            <ListPlus className="h-4 w-4" />
+                          )}
+                        </Button>
+
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-gray-500"
+                          onClick={() => handleEditEventToggle(event)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>

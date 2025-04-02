@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { apiEndpoint, imageEndpoint } from "@/helper/api";
+import { apiEndpoint } from "@/helper/api";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -12,14 +12,21 @@ import SectionTitle from "@/components/custom/SectionTitle";
 function ImageUploadPage() {
   const [images, setImages] = useState<File[]>([]);
   const [indexes, setIndexes] = useState<number[]>([]);
+  const [titles, setTitles] = useState<string[]>([]);
+  const [subtitles, setSubtitles] = useState<string[]>([]);
   const [imagePreviews, setImagePreviews] = useState<
-    { _id: string; url: string; index: number }[]
+    {
+      _id: string;
+      url: string;
+      title: string;
+      subtitle: string;
+      index: number;
+    }[]
   >([]);
 
   useEffect(() => {
     const fetchImages = async () => {
       const res = await axios.get(`${apiEndpoint}/banner`);
-
       setImagePreviews(res.data.banners);
     };
     fetchImages();
@@ -34,6 +41,8 @@ function ImageUploadPage() {
         ? Math.max(...imagePreviews.map((img) => img.index)) + 1
         : 0;
     setIndexes(files.map((_, i) => startIndex + i));
+    setTitles(files.map(() => ""));
+    setSubtitles(files.map(() => ""));
   };
 
   const handleIndexChange = (index: number, value: number) => {
@@ -42,17 +51,33 @@ function ImageUploadPage() {
     setIndexes(newIndexes);
   };
 
+  const handleTitleChange = (index: number, value: string) => {
+    const newTitles = [...titles];
+    newTitles[index] = value;
+    setTitles(newTitles);
+  };
+
+  const handleSubtitleChange = (index: number, value: string) => {
+    const newSubtitles = [...subtitles];
+    newSubtitles[index] = value;
+    setSubtitles(newSubtitles);
+  };
+
   const handleUpload = async () => {
-    const formData = new FormData();
-
-    // Append each file and its corresponding index
-    images.forEach((image) => {
-      formData.append("files", image);
-    });
-    // Append indexes as a single JSON string
-    formData.append("indexes", JSON.stringify(indexes));
-
     try {
+      const formData = new FormData();
+
+      // Append each image file
+      images.forEach((image) => {
+        formData.append("files", image);
+      });
+
+      // Append metadata as JSON strings
+      formData.append("indexes", JSON.stringify(indexes));
+      formData.append("titles", JSON.stringify(titles));
+      formData.append("subtitles", JSON.stringify(subtitles));
+
+      // Send to server
       await axios.post(`${apiEndpoint}/banner`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -62,6 +87,8 @@ function ImageUploadPage() {
       // Clear form and refresh images
       setImages([]);
       setIndexes([]);
+      setTitles([]);
+      setSubtitles([]);
 
       // Refresh the image previews
       const res = await axios.get(`${apiEndpoint}/banner`);
@@ -115,7 +142,7 @@ function ImageUploadPage() {
           )}
         </div>
         {/* Preview of selected images with index inputs */}
-        <div className="flex items-end">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {images.map((image, idx) => (
             <div key={idx} className="border rounded-lg p-4">
               <Image
@@ -125,14 +152,32 @@ function ImageUploadPage() {
                 width={100}
                 height={100}
               />
-              <Input
-                type="number"
-                min="0"
-                placeholder="Index"
-                value={indexes[idx]}
-                onChange={(e) => handleIndexChange(idx, Number(e.target.value))}
-                className="w-full p-2 border rounded"
-              />
+              <div className="space-y-2">
+                <Input
+                  type="number"
+                  min="0"
+                  placeholder="Index"
+                  value={indexes[idx]}
+                  onChange={(e) =>
+                    handleIndexChange(idx, Number(e.target.value))
+                  }
+                  className="w-full p-2 border rounded"
+                />
+                <Input
+                  type="text"
+                  placeholder="Title"
+                  value={titles[idx]}
+                  onChange={(e) => handleTitleChange(idx, e.target.value)}
+                  className="w-full p-2 border rounded"
+                />
+                <Input
+                  type="text"
+                  placeholder="Subtitle"
+                  value={subtitles[idx]}
+                  onChange={(e) => handleSubtitleChange(idx, e.target.value)}
+                  className="w-full p-2 border rounded"
+                />
+              </div>
             </div>
           ))}
         </div>
@@ -141,8 +186,8 @@ function ImageUploadPage() {
       {/* Existing Images Section */}
       <div className="bg-white p-6 ">
         <h2 className="text-xl font-semibold mb-4">Existing Banner Images</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {imagePreviews.map(({ url, index, _id }) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {imagePreviews.map(({ url, title, subtitle, index, _id }) => (
             <div key={index} className="border rounded-lg p-4 relative">
               <Button
                 variant="outline"
@@ -152,13 +197,17 @@ function ImageUploadPage() {
                 <Trash2 className="text-red-700 group-hover:text-red-600 h-4" />
               </Button>
               <Image
-                src={`${imageEndpoint}/${url}`}
+                src={url}
                 width={100}
                 height={100}
                 alt={`Banner ${index}`}
                 className="w-full h-40 object-cover mb-2 rounded"
               />
-              <p className="text-center font-medium">Index: {index}</p>
+              <div className="space-y-1">
+                <p className="font-medium">Index: {index}</p>
+                {title && <p className="font-medium">Title: {title}</p>}
+                {subtitle && <p className="text-sm">Subtitle: {subtitle}</p>}
+              </div>
             </div>
           ))}
         </div>

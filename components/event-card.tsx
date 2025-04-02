@@ -10,33 +10,18 @@ import {
 } from "@/components/ui/card";
 import { EventType } from "@/types";
 import Store from "@/helper/store";
-import { imageEndpoint } from "@/helper/api";
-
-import birth from "@/public/photography/birthday.jpeg"; // Local birthday image
-import corporate from "@/public/photography/corporate.jpeg"; // Local corporate image
-import wedding from "@/public/photography/wedding.jpeg"; // Local wedding image
 
 interface EventCardProps {
   event: EventType;
-  index: number;
 }
 
-const images = [corporate, birth, wedding];
-
-export default function EventCard({ event, index }: EventCardProps) {
+export default function EventCard({ event }: EventCardProps) {
   const { getEvent } = Store.useEvent();
-  const description =
-    "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Cumque illo natus cupiditate suscipit. Tempore dolor aspernatur, eos amet voluptate dolorum iusto quasi at, nostrum quaerat eaque totam consequatur nemo adipisci.";
   return (
     <Card className="overflow-hidden bg-primaryBlue/5 dark:bg-primaryBlue/20 border-primaryBlue/20">
       <div className="relative h-48">
         <Image
-          src={
-            event.image
-              ? `${imageEndpoint}/${event.image}`
-              : images[index] || birth
-          }
-          //   src={event.image || "/placeholder.svg"}
+          src={event.image || "/placeholder.svg"}
           alt={event.eventName}
           fill
           className="object-cover"
@@ -45,11 +30,11 @@ export default function EventCard({ event, index }: EventCardProps) {
       <CardHeader>
         <CardTitle className="text-primaryOrange">{event.eventName}</CardTitle>
       </CardHeader>
-      <CardContent>
-        <p className="text-sm text-muted-foreground">
-          {/* {event.description} */}
-          {description.split(" ").slice(0, 25).join(" ") +
-            (description.split(" ").length > 25 ? "..." : "")}
+      <CardContent className="block h-[10em]">
+        <p className="text-sm text-muted-foreground text-justify ">
+          {event.description &&
+            event.description.split(" ").slice(0, 50).join(" ") +
+              (event.description.split(" ").length > 50 ? "..." : "")}
         </p>
       </CardContent>
       <CardFooter>

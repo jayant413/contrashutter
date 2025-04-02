@@ -17,6 +17,7 @@ export interface BannerType {
 // Event Types
 export interface EventType {
   eventName: string;
+  description?: string;
   packageIds: PackageType[];
   serviceId: string;
   image: string | null;

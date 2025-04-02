@@ -26,7 +26,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
-import { apiEndpoint, imageEndpoint } from "@/helper/api";
+import { apiEndpoint } from "@/helper/api";
 import { isApiError } from "@/types";
 import { toast } from "sonner";
 import Store from "@/helper/store";
@@ -113,7 +113,7 @@ export default function ProfilePage() {
         }
 
         if (data.user.profileImage) {
-          setImagePreview(`${imageEndpoint}${data.user.profileImage}`);
+          setImagePreview(data.user.profileImage);
         }
       } catch (err) {
         if (isApiError(err)) {
@@ -221,7 +221,6 @@ export default function ProfilePage() {
     if (!editableProfile) return;
 
     try {
-      setLoading(true);
       const formData = new FormData();
 
       // Append all profile fields
@@ -256,7 +255,7 @@ export default function ProfilePage() {
       setProfile(data.user);
       setEditableProfile(data.user);
       if (data.user.profileImage) {
-        setImagePreview(`${imageEndpoint}${data.user.profileImage}`);
+        setImagePreview(data.user.profileImage);
         checkLogin();
       }
       setIsEditing(false);
@@ -266,8 +265,6 @@ export default function ProfilePage() {
         setError(err.message);
         toast.error(err.message);
       }
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -279,7 +276,7 @@ export default function ProfilePage() {
     }
     setSelectedImage(null);
     if (profile?.profileImage) {
-      setImagePreview(`${imageEndpoint}${profile.profileImage}`);
+      setImagePreview(profile.profileImage);
     }
     setIsEditing(false);
   };
@@ -325,7 +322,7 @@ export default function ProfilePage() {
           <Card>
             <CardHeader className="relative p-0">
               <div className="h-48 bg-gradient-to-r from-primaryBlue to-primaryBlue/80 rounded-t-lg"></div>
-              <div className="absolute -bottom-16 left-8 border-4 border-white dark:border-gray-800 rounded-full overflow-hidden">
+              <div className="absolute -bottom-16 left-8 border shadow-md border-gray-500 dark:border-gray-800 rounded-full overflow-hidden">
                 <div className="relative w-32 h-32 bg-gray-200 rounded-full">
                   {imagePreview ? (
                     <Image
