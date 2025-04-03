@@ -339,12 +339,14 @@ export default function ProfilePage() {
                       className="object-cover"
                     />
                   )}
-                  <button
-                    onClick={handleImageClick}
-                    className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition-opacity"
-                  >
-                    <Camera className="h-8 w-8 text-white" />
-                  </button>
+                  {isEditing && (
+                    <button
+                      onClick={handleImageClick}
+                      className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition-opacity"
+                    >
+                      <Camera className="h-8 w-8 text-white" />
+                    </button>
+                  )}
                   <input
                     type="file"
                     ref={fileInputRef}
