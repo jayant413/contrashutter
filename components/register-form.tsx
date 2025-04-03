@@ -2,7 +2,6 @@
 
 import type React from "react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -53,10 +52,13 @@ const SignupSchema = z
 
 type SignupInputState = z.infer<typeof SignupSchema>;
 
-export default function RegisterForm() {
+export default function RegisterForm({
+  setIsLogin,
+}: {
+  setIsLogin: (isLogin: boolean) => void;
+}) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const router = useRouter();
 
   const form = useForm<SignupInputState>({
     resolver: zodResolver(SignupSchema),
@@ -75,7 +77,8 @@ export default function RegisterForm() {
       const response = await axios.post(`${apiEndpoint}/auth/register`, data);
 
       if (response.status === 200) {
-        router.push("/login");
+        setIsLogin(true);
+        form.reset();
         toast.success("Registered successfully");
       }
     } catch (error) {
@@ -83,7 +86,9 @@ export default function RegisterForm() {
       if (isApiError(error)) {
         if (error.status === 409) {
           toast.info("Already registered please sign in");
-          router.push("/login");
+          setIsLogin(true);
+          form.reset();
+          return;
         }
         toast.error(error.response?.data.message || "An error occurred");
       }

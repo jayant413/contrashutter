@@ -26,12 +26,12 @@ export default function AboutPage() {
         <div className="absolute inset-0 bg-gradient-to-r from-primaryBlue/80 to-transparent flex items-center">
           <div className="max-w-lg p-8 text-white">
             <h2 className="text-3xl font-bold mb-4">Our Story</h2>
-            <p className="mb-4">
+            <p className="mb-4 text-justify">
               Founded in 2013, Contrashutter began with a simple mission: to
               capture life&apos;s most precious moments with artistry and
               authenticity.
             </p>
-            <p>
+            <p className="text-justify">
               What started as a small photography studio has grown into a
               full-service event company, offering photography, makeup, and
               decoration services for all types of events.
@@ -73,13 +73,13 @@ export default function AboutPage() {
           <h2 className="text-2xl font-bold mb-4 text-primaryOrange">
             Why Choose Us
           </h2>
-          <p className="text-gray-700 dark:text-gray-300 mb-4">
+          <p className="text-gray-700 dark:text-gray-300 text-justify mb-4">
             At Contrashutter, we bring your special moments to life with our
             exceptional photography and event services. Our team of
             professionals is dedicated to capturing the essence of your events
             with creativity and precision.
           </p>
-          <p className="text-gray-700 dark:text-gray-300">
+          <p className="text-gray-700 dark:text-gray-300 text-justify">
             We pride ourselves on attention to detail, personalized service, and
             delivering beyond expectations. Every client receives our undivided
             attention and a customized approach to their unique needs.
@@ -93,13 +93,13 @@ export default function AboutPage() {
           <h2 className="text-2xl font-bold mb-4 text-primaryOrange">
             Our Mission
           </h2>
-          <p className="text-gray-700 dark:text-gray-300 mb-4">
+          <p className="text-gray-700 dark:text-gray-300 text-justify mb-4">
             Our mission is to transform ordinary events into extraordinary
             memories. We strive to capture authentic moments that tell your
             unique story. Through our lens, we aim to preserve the emotions,
             connections, and joy that make each event special.
           </p>
-          <p className="text-gray-700 dark:text-gray-300">
+          <p className="text-gray-700 dark:text-gray-300 text-justify">
             We are committed to providing exceptional service that exceeds
             client expectations. We believe that every moment deserves to be
             captured with care, creativity, and technical excellence.
@@ -113,13 +113,13 @@ export default function AboutPage() {
           <h2 className="text-2xl font-bold mb-4 text-primaryOrange">
             Our Vision
           </h2>
-          <p className="text-gray-700 dark:text-gray-300 mb-4">
+          <p className="text-gray-700 dark:text-gray-300 text-justify mb-4">
             We envision becoming the premier choice for event photography and
             services, known for our artistic excellence and customer
             satisfaction. We aim to continuously innovate our craft, embrace new
             technologies, and set new standards in the industry.
           </p>
-          <p className="text-gray-700 dark:text-gray-300">
+          <p className="text-gray-700 dark:text-gray-300 text-justify">
             Our goal is to build lasting relationships with our clients through
             trust and quality. We see a future where Contrashutter is synonymous
             with exceptional event services and unforgettable memories.

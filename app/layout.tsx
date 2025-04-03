@@ -6,6 +6,8 @@ import Footer from "@/components/Footer";
 import Sidebar from "@/components/Sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import Overlay from "@/components/Overlay";
+import RouteGuard from "@/components/custom/RouteGuard";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -31,6 +33,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} relative antialiased flex flex-col min-h-screen`}
       >
+        <RouteGuard />
         <Toaster position="top-center" />
         <Navbar />
         <main className="relative flex h-[89.5vh] overflow-hidden">

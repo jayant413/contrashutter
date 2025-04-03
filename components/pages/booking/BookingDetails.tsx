@@ -435,40 +435,42 @@ export default function BookingDetails({
                   </div>
                 </div>
 
-                <div>
-                  <h3 className="font-semibold text-lg mb-4 text-primaryBlue">
-                    Client Details
-                  </h3>
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <User className="h-5 w-5 text-primaryOrange mt-0.5" />
-                      <div>
-                        <p className="font-medium">Name</p>
-                        <p className="text-gray-600">
-                          {booking?.basic_info?.fullName}
-                        </p>
+                {userRole !== "Service Provider" && (
+                  <div>
+                    <h3 className="font-semibold text-lg mb-4 text-primaryBlue">
+                      Client Details
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="flex items-start gap-3">
+                        <User className="h-5 w-5 text-primaryOrange mt-0.5" />
+                        <div>
+                          <p className="font-medium">Name</p>
+                          <p className="text-gray-600">
+                            {booking?.basic_info?.fullName}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Phone className="h-5 w-5 text-primaryOrange mt-0.5" />
-                      <div>
-                        <p className="font-medium">Contact</p>
-                        <p className="text-gray-600">
-                          {booking?.basic_info?.phoneNumber}
-                        </p>
+                      <div className="flex items-start gap-3">
+                        <Phone className="h-5 w-5 text-primaryOrange mt-0.5" />
+                        <div>
+                          <p className="font-medium">Contact</p>
+                          <p className="text-gray-600">
+                            {booking?.basic_info?.phoneNumber}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <ExternalLink className="h-5 w-5 text-primaryOrange mt-0.5" />
-                      <div>
-                        <p className="font-medium">Email</p>
-                        <p className="text-gray-600">
-                          {booking?.basic_info?.email}
-                        </p>
+                      <div className="flex items-start gap-3">
+                        <ExternalLink className="h-5 w-5 text-primaryOrange mt-0.5" />
+                        <div>
+                          <p className="font-medium">Email</p>
+                          <p className="text-gray-600">
+                            {booking?.basic_info?.email}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
 
               <Separator className="my-6" />
@@ -686,54 +688,64 @@ export default function BookingDetails({
                   )}
               </div>
 
-              <Separator className="my-6" />
+              {userRole !== "Service Provider" && (
+                <>
+                  <Separator className="my-6" />
 
-              <div>
-                <h3 className="font-semibold text-lg mb-4 text-primaryBlue">
-                  Payment Details
-                </h3>
-                <div className="bg-primaryBlue/5 rounded-lg p-4">
-                  {booking?.package_details?.bill_details &&
-                    booking.package_details.bill_details.length > 0 && (
-                      <div className="space-y-2">
-                        {booking.package_details.bill_details.map(
-                          (bill, index) => (
-                            <div key={index} className="flex justify-between">
-                              <span>{bill.type}</span>
-                              <span>₹{bill.amount.toLocaleString()}</span>
+                  <div>
+                    <h3 className="font-semibold text-lg mb-4 text-primaryBlue">
+                      Payment Details
+                    </h3>
+                    <div className="bg-primaryBlue/5 rounded-lg p-4">
+                      {booking?.package_details?.bill_details &&
+                        booking.package_details.bill_details.length > 0 && (
+                          <div className="space-y-2">
+                            {booking.package_details.bill_details.map(
+                              (bill, index) => (
+                                <div
+                                  key={index}
+                                  className="flex justify-between"
+                                >
+                                  <span>{bill.type}</span>
+                                  <span>₹{bill.amount.toLocaleString()}</span>
+                                </div>
+                              )
+                            )}
+                            <Separator className="my-2" />
+                            <div className="flex justify-between font-bold">
+                              <span>Total</span>
+                              <span>
+                                ₹
+                                {booking?.package_details.price.toLocaleString()}
+                              </span>
                             </div>
-                          )
+                          </div>
                         )}
-                        <Separator className="my-2" />
-                        <div className="flex justify-between font-bold">
-                          <span>Total</span>
-                          <span>
-                            ₹{booking?.package_details.price.toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-                    )}
 
-                  {(!booking?.package_details?.bill_details ||
-                    booking.package_details.bill_details.length === 0) && (
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span>Package Price</span>
-                        <span>
-                          ₹{booking?.package_details?.price.toLocaleString()}
-                        </span>
-                      </div>
-                      <Separator className="my-2" />
-                      <div className="flex justify-between font-bold">
-                        <span>Total</span>
-                        <span>
-                          ₹{booking?.package_details?.price.toLocaleString()}
-                        </span>
-                      </div>
+                      {(!booking?.package_details?.bill_details ||
+                        booking.package_details.bill_details.length === 0) && (
+                        <div className="space-y-2">
+                          <div className="flex justify-between">
+                            <span>Package Price</span>
+                            <span>
+                              ₹
+                              {booking?.package_details?.price.toLocaleString()}
+                            </span>
+                          </div>
+                          <Separator className="my-2" />
+                          <div className="flex justify-between font-bold">
+                            <span>Total</span>
+                            <span>
+                              ₹
+                              {booking?.package_details?.price.toLocaleString()}
+                            </span>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              </div>
+                  </div>
+                </>
+              )}
 
               {/* Payment Actions */}
               {userRole === "Client" &&
@@ -779,66 +791,68 @@ export default function BookingDetails({
 
         <div className="space-y-6">
           {/* Invoice History Card */}
-          <Card>
-            <CardHeader className="bg-primaryBlue/5">
-              <CardTitle>Invoice History</CardTitle>
-            </CardHeader>
-            <CardContent className="p-4">
-              {booking?.invoices && booking.invoices.length > 0 ? (
-                <div className="space-y-4">
-                  {booking.invoices.map((invoice, index) => (
-                    <div key={index} className="border p-3 rounded-lg">
-                      <div className="space-y-2">
-                        <div className="flex justify-between">
-                          <span className="text-sm font-medium">Date:</span>
-                          <span className="text-sm">
-                            {invoice.paymentDate
-                              ? new Date(
-                                  invoice.paymentDate
-                                ).toLocaleDateString()
-                              : "Not specified"}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm font-medium">Amount:</span>
-                          <span className="text-sm">
-                            ₹
-                            {invoice.paidAmount
-                              ? invoice.paidAmount.toLocaleString()
-                              : "-"}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm font-medium">Method:</span>
-                          <span className="text-sm">
-                            {invoice.paymentMethod}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm font-medium">Status:</span>
-                          <span
-                            className={`text-sm ${
-                              invoice.paymentStatus === "Completed"
-                                ? "text-green-600"
-                                : invoice.paymentStatus === "Pending"
-                                ? "text-yellow-600"
-                                : "text-red-600"
-                            }`}
-                          >
-                            {invoice.paymentStatus}
-                          </span>
+          {userRole !== "Service Provider" && (
+            <Card>
+              <CardHeader className="bg-primaryBlue/5">
+                <CardTitle>Invoice History</CardTitle>
+              </CardHeader>
+              <CardContent className="p-4">
+                {booking?.invoices && booking.invoices.length > 0 ? (
+                  <div className="space-y-4">
+                    {booking.invoices.map((invoice, index) => (
+                      <div key={index} className="border p-3 rounded-lg">
+                        <div className="space-y-2">
+                          <div className="flex justify-between">
+                            <span className="text-sm font-medium">Date:</span>
+                            <span className="text-sm">
+                              {invoice.paymentDate
+                                ? new Date(
+                                    invoice.paymentDate
+                                  ).toLocaleDateString()
+                                : "Not specified"}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm font-medium">Amount:</span>
+                            <span className="text-sm">
+                              ₹
+                              {invoice.paidAmount
+                                ? invoice.paidAmount.toLocaleString()
+                                : "-"}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm font-medium">Method:</span>
+                            <span className="text-sm">
+                              {invoice.paymentMethod}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm font-medium">Status:</span>
+                            <span
+                              className={`text-sm ${
+                                invoice.paymentStatus === "Completed"
+                                  ? "text-green-600"
+                                  : invoice.paymentStatus === "Pending"
+                                  ? "text-yellow-600"
+                                  : "text-red-600"
+                              }`}
+                            >
+                              {invoice.paymentStatus}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-center text-gray-500">
-                  No invoices available
-                </p>
-              )}
-            </CardContent>
-          </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-center text-gray-500">
+                    No invoices available
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           {/* Delivery Information Card */}
           <Card>
@@ -862,12 +876,14 @@ export default function BookingDetails({
                     {booking?.delivery_address?.deliveryPincode}
                   </p>
                 </div>
-                <div>
-                  <span className="font-medium">Contact:</span>
-                  <p className="text-gray-700">
-                    {booking?.delivery_address?.deliveryContactNumber}
-                  </p>
-                </div>
+                {userRole !== "Service Provider" && (
+                  <div>
+                    <span className="font-medium">Contact:</span>
+                    <p className="text-gray-700">
+                      {booking?.delivery_address?.deliveryContactNumber}
+                    </p>
+                  </div>
+                )}
                 {booking?.delivery_address?.additionalDeliveryInstructions && (
                   <div>
                     <span className="font-medium">Instructions:</span>

@@ -61,6 +61,7 @@ const useAuth = create<AuthState>((set, get) => ({
   },
 
   checkLogin: async () => {
+    set({ loading: true });
     try {
       const { data } = await axios.get(`${apiEndpoint}/user/checkLogin`, {
         withCredentials: true,
@@ -73,7 +74,7 @@ const useAuth = create<AuthState>((set, get) => ({
         return false;
       }
     } catch {
-      set({ user: null, isLoggedIn: false, error: null });
+      set({ user: null, isLoggedIn: false, error: null, loading: false });
       return false;
     }
   },

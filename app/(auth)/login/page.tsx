@@ -92,7 +92,11 @@ export default function LoginPage() {
               </button>
             </div>
 
-            {isLogin ? <LoginForm setIsLogin={setIsLogin} /> : <RegisterForm />}
+            {isLogin ? (
+              <LoginForm setIsLogin={setIsLogin} />
+            ) : (
+              <RegisterForm setIsLogin={setIsLogin} />
+            )}
 
             <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 text-center text-sm text-gray-600 dark:text-gray-400">
               By continuing, you agree to our{" "}

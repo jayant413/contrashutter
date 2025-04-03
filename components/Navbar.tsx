@@ -26,7 +26,6 @@ import {
 } from "@/components/ui/menubar";
 import { IoMdArrowDropdown } from "react-icons/io";
 import {
-  AppWindow,
   Bell,
   BriefcaseBusiness,
   LogOut,
@@ -349,12 +348,6 @@ const Navbar = () => {
                         <span>Contact Us</span>
                       </MenubarItem>
                     </Link>{" "}
-                    <Link href={pathname} target="_blank">
-                      <MenubarItem>
-                        <AppWindow className="h-4 -translate-x-[0.1em]" />
-                        <span>New Window</span>
-                      </MenubarItem>
-                    </Link>
                     <MenubarSeparator />
                     <Link href="/login">
                       <MenubarItem
