@@ -294,19 +294,19 @@ export function BookingForm() {
 
   const [currentStep, setCurrentStep] = useState(0);
 
-  const validateBasicInfo = () => {
-    const basicInfo = form.getValues("basic_info");
-    return (
-      basicInfo.fullName &&
-      basicInfo.gender &&
-      basicInfo.email &&
-      basicInfo.phoneNumber &&
-      basicInfo.addressLine1 &&
-      basicInfo.city &&
-      basicInfo.state &&
-      basicInfo.pincode
-    );
-  };
+  // const validateBasicInfo = () => {
+  //   const basicInfo = form.getValues("basic_info");
+  //   return (
+  //     basicInfo.fullName &&
+  //     basicInfo.gender &&
+  //     basicInfo.email &&
+  //     basicInfo.phoneNumber &&
+  //     basicInfo.addressLine1 &&
+  //     basicInfo.city &&
+  //     basicInfo.state &&
+  //     basicInfo.pincode
+  //   );
+  // };
 
   const validateFormDetails = () => {
     const formDetailsValues = form.getValues("form_details");
@@ -343,25 +343,25 @@ export function BookingForm() {
 
   const validateCurrentStep = () => {
     switch (currentStep) {
+      // case 0:
+      //   if (!validateBasicInfo()) {
+      //     toast.error("Please fill all the required fields in Basic Info");
+      //     return false;
+      //   }
+      //   break;
       case 0:
-        if (!validateBasicInfo()) {
-          toast.error("Please fill all the required fields in Basic Info");
-          return false;
-        }
-        break;
-      case 1:
         if (!validateFormDetails()) {
           toast.error("Please fill all the form fields");
           return false;
         }
         break;
-      case 2:
+      case 1:
         if (!validateEventDetails()) {
           toast.error("Please fill all the required fields in Event Details");
           return false;
         }
         break;
-      case 3:
+      case 2:
         if (!validateDeliveryAddress()) {
           toast.error(
             "Please fill all the required fields in Delivery Address"
@@ -374,7 +374,7 @@ export function BookingForm() {
   };
 
   const steps = [
-    <BasicInfo key="basic-info" form={form} />,
+    // <BasicInfo key="basic-info" form={form} />,
     <FormDetails
       key="form-details"
       form={form}

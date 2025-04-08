@@ -249,7 +249,7 @@ export default function BookingDetails({
     !lastPartnerResponse || lastPartnerResponse.status === "Requested";
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className=" mx-auto px-4 py-8">
       <div className="mb-6 flex items-center justify-between">
         <Button
           variant="ghost"

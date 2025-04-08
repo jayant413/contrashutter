@@ -6,46 +6,50 @@ import { Camera } from "lucide-react";
 import LoginForm from "@/components/login-form";
 import RegisterForm from "@/components/register-form";
 import Link from "next/link";
-import { useMain } from "@/helper/store";
 import { cn } from "@/lib/utils";
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
-  const { isShowSidebar } = useMain();
 
   return (
-    <div className=" mx-auto  px-4 py-12 ">
-      <div className="flex flex-col md:flex-row gap-4 xl:mx-[4em]">
+    // Remove the fixed min-height and make it dynamic
+    <div className="mx-auto px-4 py-12">
+      <div className="flex flex-col md:flex-row gap-4 xl:mx-[4em] items-stretch">
         {/* Image Section */}
         <div
           className={cn(
-            "md:w-1/2 relative h-[30em] rounded-xl overflow-hidden hidden md:block transition-all duration-200",
-            isShowSidebar ? "md:scale-90 " : "md:scale-100"
+            "md:w-1/2 relative rounded-xl overflow-hidden hidden md:block transition-all duration-200"
           )}
         >
-          <Image
-            src="/placeholder.svg?height=1200&width=800"
-            alt="Photography services"
-            fill
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-primaryBlue/80 to-primaryBlue/30 flex flex-col items-center justify-center text-white p-8">
-            <Camera className="w-16 h-16 text-primaryOrange mb-4" />
-            <h2 className="text-3xl font-bold mb-4 text-center">
-              Welcome to Contrashutter
-            </h2>
-            <p className="text-lg text-center max-w-md">
-              Join our community of photography enthusiasts and access premium
-              services for all your special events.
-            </p>
-            <div className="mt-8 grid grid-cols-2 gap-4 w-full max-w-md">
-              <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg text-center">
-                <h3 className="font-bold text-2xl text-primaryOrange">1000+</h3>
-                <p>Happy Clients</p>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg text-center">
-                <h3 className="font-bold text-2xl text-primaryOrange">5000+</h3>
-                <p>Events Covered</p>
+          <div className="absolute inset-0">
+            <Image
+              src="/placeholder.svg?height=1200&width=800"
+              alt="Photography services"
+              fill
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-primaryBlue/80 to-primaryBlue/30 flex flex-col items-center justify-center text-white p-8">
+              <Camera className="w-16 h-16 text-primaryOrange mb-4" />
+              <h2 className="text-3xl font-bold mb-4 text-center">
+                Welcome to Contrashutter
+              </h2>
+              <p className="text-lg text-center max-w-md">
+                Join our community of photography enthusiasts and access premium
+                services for all your special events.
+              </p>
+              <div className="mt-8 grid grid-cols-2 gap-4 w-full max-w-md">
+                <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg text-center">
+                  <h3 className="font-bold text-2xl text-primaryOrange">
+                    1000+
+                  </h3>
+                  <p>Happy Clients</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg text-center">
+                  <h3 className="font-bold text-2xl text-primaryOrange">
+                    5000+
+                  </h3>
+                  <p>Events Covered</p>
+                </div>
               </div>
             </div>
           </div>
