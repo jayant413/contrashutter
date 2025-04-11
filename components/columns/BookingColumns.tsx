@@ -87,7 +87,7 @@ const GetBookingColumns = () => {
       },
     },
     {
-      accessorKey: "basic_info.fullName",
+      accessorKey: "userId.fullname",
       header: "Full Name",
     },
     {
@@ -103,7 +103,7 @@ const GetBookingColumns = () => {
       header: "Venue Name",
     },
     {
-      accessorKey: "basic_info.phoneNumber",
+      accessorKey: "userId.contact",
       header: "Phone Number",
     },
   ];

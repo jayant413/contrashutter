@@ -67,7 +67,7 @@ export default function BookingDetails({
   const [selectedProviderId, setSelectedProviderId] = useState("");
   const [paying, startPayment] = useTransition();
   const [isPrinting, setIsPrinting] = useState(false);
-  const { addNotification } = Store.useAuth();
+  const { addNotification, user } = Store.useAuth();
 
   const statusOptions = [
     "Booked",
@@ -147,9 +147,9 @@ export default function BookingDetails({
             }
           },
           prefill: {
-            name: booking.basic_info.fullName,
-            email: booking.basic_info.email,
-            contact: booking.basic_info.phoneNumber,
+            name: user?.fullname,
+            email: user?.email,
+            contact: user?.contact,
           },
           theme: {
             color: "#3399cc",
@@ -249,7 +249,7 @@ export default function BookingDetails({
     !lastPartnerResponse || lastPartnerResponse.status === "Requested";
 
   return (
-    <div className=" mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
       <div className="mb-6 flex items-center justify-between">
         <Button
           variant="ghost"
@@ -258,6 +258,261 @@ export default function BookingDetails({
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Bookings
+        </Button>
+        <Button
+          variant="outline"
+          className="flex items-center gap-2 border-primaryBlue text-primaryBlue hover:bg-primaryBlue hover:text-white"
+          onClick={() => {
+            // Create a new window for printing
+            const printWindow = window.open("", "_blank");
+            if (!printWindow) return;
+
+            // Update the print content section
+            const printContent = `
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <title>Booking #${booking?.booking_no} - Contrashutter</title>
+                <style>
+                  body { 
+                    font-family: Arial, sans-serif;
+                    line-height: 1.6;
+                    padding: 20px;
+                    max-width: 800px;
+                    margin: 0 auto;
+                  }
+                  .header {
+                    text-align: center;
+                    margin-bottom: 30px;
+                  }
+                  .booking-number {
+                    color: #FF5722;
+                    font-weight: bold;
+                  }
+                  .section {
+                    margin-bottom: 20px;
+                    border-bottom: 1px solid #eee;
+                    padding-bottom: 15px;
+                  }
+                  .section-title {
+                    color: #042B3A;
+                    font-size: 1.2em;
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                  }
+                  .grid {
+                    display: grid;
+                    grid-template-columns: 1fr;
+                    gap: 10px;
+                  }
+                  .label {
+                    font-weight: bold;
+                    min-width: 150px;
+                    display: inline-block;
+                  }
+                  @media print {
+                    body { padding: 0; }
+                    .section { page-break-inside: avoid; }
+                  }
+                </style>
+              </head>
+              <body>
+                <div class="header">
+                  <h1>Contrashutter</h1>
+                  <h2>Booking Number: <span class="booking-number">${
+                    booking?.booking_no
+                  }</span></h2>
+                </div>
+
+                <div class="section">
+                  <div class="section-title">Package Details</div>
+                  <div class="grid">
+                    <div><span class="label">Package Name:</span> ${
+                      booking?.package_details?.name || "Not specified"
+                    }</div>
+                    <div><span class="label">Price:</span> ₹${
+                      booking?.package_details?.price?.toLocaleString(
+                        "en-IN"
+                      ) || "0"
+                    }</div>
+                    <div><span class="label">Package Inclusions:</span> ${
+                      booking?.package_details?.card_details &&
+                      booking?.package_details?.card_details?.length > 0
+                        ? booking?.package_details?.card_details
+                            ?.map(
+                              (card) =>
+                                `<br>- ${card.product_name} - Quantity: ${card.quantity}`
+                            )
+                            .join("")
+                        : "<br>- Quantity: 0"
+                    }</div>
+                    <div><span class="label">Bill Breakdown:</span> ${
+                      booking?.package_details?.bill_details &&
+                      booking.package_details.bill_details.length > 0
+                        ? booking.package_details.bill_details
+                            .map(
+                              (bill) =>
+                                `<br>- ${bill.type || ""}: ₹${
+                                  bill.amount?.toLocaleString("en-IN") || "0"
+                                }`
+                            )
+                            .join("")
+                        : ": ₹0"
+                    }</div>
+                  </div>
+                </div>
+
+                <div class="section">
+                  <div class="section-title">Personal Details</div>
+                  <div class="grid">
+                    <div><span class="label">Full Name:</span> ${
+                      booking?.userId?.fullname || "Not specified"
+                    }</div>
+                    <div><span class="label">Email:</span> ${
+                      booking?.userId?.email || "Not specified"
+                    }</div>
+                    <div><span class="label">Phone Number:</span> ${
+                      booking?.userId?.contact || "Not specified"
+                    }</div>
+                    <div><span class="label">Address:</span> ${
+                      booking?.userId?.address || ""
+                    }</div>
+                  </div>
+                </div>
+
+                <div class="section">
+                  <div class="section-title">Event Details</div>
+                  <div class="grid">
+                    <div><span class="label">Event Name:</span> ${
+                      booking?.eventName || "Not specified"
+                    }</div>
+                    <div><span class="label">Event Date:</span> ${
+                      booking?.event_details?.eventDate
+                        ? new Date(
+                            booking.event_details.eventDate
+                          ).toLocaleDateString()
+                        : "Not specified"
+                    }</div>
+                    <div><span class="label">Venue:</span> ${
+                      booking?.event_details?.venueName || ""
+                    }, ${booking?.event_details?.venueCity || ""}</div>
+                    <div><span class="label">Number of Guests:</span> ${
+                      booking?.event_details?.numberOfGuests || "Not specified"
+                    }</div>
+                  </div>
+                </div>
+
+                <div class="section">
+                  <div class="section-title">Delivery Information</div>
+                  <div class="grid">
+                    <div><span class="label">Recipient Name:</span> ${
+                      booking?.delivery_address?.recipientName ||
+                      "Not specified"
+                    }</div>
+                    <div><span class="label">Address:</span> ${
+                      booking?.delivery_address?.deliveryAddressLine1 || ""
+                    }, ${booking?.delivery_address?.deliveryCity || ""}, ${
+              booking?.delivery_address?.deliveryState || ""
+            } - ${booking?.delivery_address?.deliveryPincode || ""}</div>
+                    <div><span class="label">Contact Number:</span> ${
+                      booking?.delivery_address?.deliveryContactNumber ||
+                      "Not specified"
+                    }</div>
+                    <div><span class="label">Additional Instructions:</span> ${
+                      booking?.delivery_address
+                        ?.additionalDeliveryInstructions || "None"
+                    }</div>
+                  </div>
+                </div>
+
+                <div class="section">
+                  <div class="section-title">Photography Preferences</div>
+                  <div class="grid">
+                    <div><span class="label">Preferred Style:</span> ${
+                      booking?.payment_details?.preferredPhotographyStyle ||
+                      "Not specified"
+                    }</div>
+                    <div><span class="label">Editing Style:</span> ${
+                      booking?.payment_details?.preferredEditingStyle ||
+                      "Not specified"
+                    }</div>
+                    <div><span class="label">Reference Files:</span> ${
+                      booking?.payment_details?.referenceFiles?.length
+                        ? "Uploaded"
+                        : "None"
+                    }</div>
+                  </div>
+                </div>
+
+                <div class="section">
+                  <div class="section-title">Payment Information</div>
+                  <div class="grid">
+                    <div><span class="label">Preferred Method:</span> ${
+                      booking?.payment_details?.preferredPaymentMethod ||
+                      "Not specified"
+                    }</div>
+                    <div><span class="label">Payment Type:</span> ${
+                      booking?.payment_details?.paymentType || "Not specified"
+                    }</div>
+                  </div>
+                </div>
+
+                <div class="section">
+                  <div class="section-title">Invoice History</div>
+                  <div class="grid">
+                    ${booking?.invoices
+                      ?.map(
+                        (invoice, index) => `
+                      <div style="margin-top: 10px; padding-top: 10px; border-top: ${
+                        index > 0 ? "1px solid #eee" : "none"
+                      }">
+                        <div><span class="label">Payment Date:</span> ${
+                          invoice.paymentDate
+                            ? new Date(invoice.paymentDate).toLocaleDateString()
+                            : "Not specified"
+                        }</div>
+                        <div><span class="label">Amount Paid:</span> ₹${
+                          invoice.paidAmount?.toLocaleString("en-IN") || "0"
+                        }</div>
+                        <div><span class="label">Payment Method:</span> ${
+                          invoice.paymentMethod || "Not specified"
+                        }</div>
+                        <div><span class="label">Status:</span> ${
+                          invoice.paymentStatus || "Not specified"
+                        }</div>
+                      </div>
+                    `
+                      )
+                      .join("")}
+                  </div>
+                </div>
+              </body>
+              </html>
+            `;
+
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            printWindow.onload = () => {
+              printWindow.print();
+            };
+          }}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+          Print Booking
         </Button>
         <div className="flexs gap-2 hidden">
           <Button
@@ -445,27 +700,21 @@ export default function BookingDetails({
                         <User className="h-5 w-5 text-primaryOrange mt-0.5" />
                         <div>
                           <p className="font-medium">Name</p>
-                          <p className="text-gray-600">
-                            {booking?.basic_info?.fullName}
-                          </p>
+                          <p className="text-gray-600">{user?.fullname}</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
                         <Phone className="h-5 w-5 text-primaryOrange mt-0.5" />
                         <div>
                           <p className="font-medium">Contact</p>
-                          <p className="text-gray-600">
-                            {booking?.basic_info?.phoneNumber}
-                          </p>
+                          <p className="text-gray-600">{user?.contact}</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
                         <ExternalLink className="h-5 w-5 text-primaryOrange mt-0.5" />
                         <div>
                           <p className="font-medium">Email</p>
-                          <p className="text-gray-600">
-                            {booking?.basic_info?.email}
-                          </p>
+                          <p className="text-gray-600">{user?.email}</p>
                         </div>
                       </div>
                     </div>
@@ -763,7 +1012,10 @@ export default function BookingDetails({
                     >
                       {paying
                         ? "Processing..."
-                        : `Pay Balance (₹${booking.payment_details.dueAmount.toLocaleString()})`}
+                        : `Pay 2nd Installment (₹${(
+                            (booking.payment_details.payablePrice * 40) /
+                            100
+                          ).toLocaleString()})`}
                     </Button>
                   </div>
                 )}
@@ -924,6 +1176,26 @@ export default function BookingDetails({
                       : "None"}
                   </p>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* From Fields  */}
+          <Card>
+            <CardHeader className="bg-primaryBlue/5">
+              <CardTitle>{booking?.form_details?.title}</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4">
+              <div className="space-y-3">
+                {booking?.form_details &&
+                  Object.entries(booking.form_details)
+                    .filter(([key]) => key !== "title")
+                    .map(([key, value]) => (
+                      <div key={key}>
+                        <span className="font-medium">{key}:</span>
+                        <p className="text-gray-700">{value}</p>
+                      </div>
+                    ))}
               </div>
             </CardContent>
           </Card>

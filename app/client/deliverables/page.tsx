@@ -132,9 +132,9 @@ const Deliverables = () => {
           }
         },
         prefill: {
-          name: selectedBooking?.basic_info?.fullName || user?.fullname,
-          email: selectedBooking?.basic_info?.email || user?.email,
-          contact: selectedBooking?.basic_info?.phoneNumber || "",
+          name: selectedBooking?.userId?.fullname || user?.fullname,
+          email: selectedBooking?.userId?.email || user?.email,
+          contact: selectedBooking?.userId?.contact || "",
         },
       };
 

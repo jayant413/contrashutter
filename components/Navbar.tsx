@@ -63,7 +63,7 @@ const Navbar = () => {
   }, [setIsShowSidebar]);
 
   return (
-    <nav className="flex items-center justify-between px-6 py-4 bg-white border-b shadow-sm z-30">
+    <nav className="flex items-center justify-between px-6 py-4 bg-[#042B3A] text-white shadow-sm z-30">
       {/* Logo and Toggle Button */}
       <Sheet open={isSheetOpen} onOpenChange={setSheetOpen}>
         {" "}
@@ -88,7 +88,7 @@ const Navbar = () => {
             </SheetDescription>
           </SheetHeader>
           {user && user?.notifications.length > 0 ? (
-            <div className="flex flex-col gap-2 mt-[1em]">
+            <div className="flex flex-col gap-2 mt-[1em] overflow-y-auto h-[85vh]">
               {user?.notifications.map((notification) => (
                 <Link
                   key={notification._id}
@@ -133,7 +133,7 @@ const Navbar = () => {
       </Sheet>
       <div className="flex items-center space-x-4">
         <div
-          className="p-2 bg-gray-100 rounded-md cursor-pointer"
+          className="p-2 hover:bg-gray-600 rounded-md cursor-pointer"
           onClick={onToggleSidebar}
         >
           <FiMenu size={20} />
@@ -151,10 +151,10 @@ const Navbar = () => {
             alt="Contrashutter Logo"
           />
           <div>
-            <h1 className="text-sm sm:text-lg font-semibold text-gray-800">
+            <h1 className="text-sm sm:text-lg font-semibold text-primaryOrange">
               Contrashutter
             </h1>
-            <p className="text-xs sm:text-sm text-gray-500">
+            <p className="text-xs sm:text-sm text-gray-100">
               Let&apos;s Make It Memorable
             </p>
           </div>
@@ -180,9 +180,9 @@ const Navbar = () => {
               variant="ghost"
               className={`${
                 pathname === "/"
-                  ? "text-primaryBlue font-semibold bg-gray-100"
-                  : "hover:text-primaryBlue/80"
-              } transition duration-300`}
+                  ? "text-primaryOrange font-semibold underline hover:text-primaryOrange"
+                  : "hover:text-primaryOrange"
+              } transition duration-300 hover:bg-transparent hover:underline underline-offset-4`}
             >
               Home
             </Button>
@@ -192,9 +192,9 @@ const Navbar = () => {
               variant="ghost"
               className={`${
                 pathname === "/about"
-                  ? "text-primaryBlue font-semibold bg-gray-100"
-                  : "hover:text-primaryBlue/80"
-              } transition duration-300`}
+                  ? "text-primaryOrange font-semibold underline hover:text-primaryOrange"
+                  : "hover:text-primaryOrange"
+              } transition duration-300 hover:bg-transparent hover:underline underline-offset-4`}
             >
               About Us
             </Button>
@@ -204,9 +204,9 @@ const Navbar = () => {
               variant="ghost"
               className={`${
                 pathname === "/contact"
-                  ? "text-primaryBlue font-semibold bg-gray-100"
-                  : "hover:text-primaryBlue/80"
-              } transition duration-300`}
+                  ? "text-primaryOrange font-semibold underline hover:text-primaryOrange"
+                  : "hover:text-primaryOrange"
+              } transition duration-300 hover:bg-transparent hover:underline underline-offset-4`}
             >
               Contact
             </Button>
@@ -217,9 +217,9 @@ const Navbar = () => {
                 variant="ghost"
                 className={`${
                   pathname === "/login"
-                    ? "text-primaryBlue font-semibold bg-gray-100"
-                    : "hover:text-primaryBlue/80"
-                } transition duration-300`}
+                    ? "text-primaryOrange font-semibold underline hover:text-primaryOrange"
+                    : "hover:text-primaryOrange"
+                } transition duration-300 hover:bg-transparent hover:underline underline-offset-4`}
               >
                 Log In
               </Button>
@@ -277,15 +277,15 @@ const Navbar = () => {
         {user ? (
           <ul className="flex items-center space-x-3 text-gray-600">
             <li className="flex items-center space-x-1">
-              <Menubar className="rounded-none shadow-none border-b pb-2 focus:bg-transparent border-gray-300 border-x-0 border-t-0">
+              <Menubar className="rounded-none shadow-none border-b pb-2 focus:bg-transparent bg-[#042B3A] text-white border-x-0 border-t-0">
                 <MenubarMenu>
-                  <MenubarTrigger className="space-x-3">
+                  <MenubarTrigger className="space-x-3 focus:bg-transparent  focus:text-white ">
                     <Avatar className="w-8 h-8 border">
                       <AvatarImage
                         src={
                           user?.profileImage
                             ? user?.profileImage
-                            : "https://github.com/shadcn.png"
+                            : "/placeholder.svg"
                         }
                       />
                       <AvatarFallback>
@@ -366,8 +366,8 @@ const Navbar = () => {
                 </MenubarMenu>
               </Menubar>
               <Link href="/wishlist" className="hidden lg:block">
-                <Button variant="ghost" className="relative">
-                  <ShoppingCart />
+                <Button variant="ghost" className="relative  hover:bg-gray-600">
+                  <ShoppingCart className="text-white" />
                   {user?.wishlist.length > 0 && (
                     <Badge
                       variant="destructive"
@@ -381,14 +381,14 @@ const Navbar = () => {
               <Button
                 variant="ghost"
                 onClick={() => setSheetOpen(true)}
-                className="relative hidden lg:block"
+                className="relative hidden lg:block  hover:bg-gray-600"
               >
                 {user?.notifications.filter(
                   (notification) => !notification.read
                 ).length > 0 && (
                   <Badge
                     variant="destructive"
-                    className="absolute top-1 right-2 text-[0.7rem] p-1 py-0  leading-none"
+                    className="absolute top-1 right-2 text-[0.7rem] p-1 py-0  leading-none "
                   >
                     {
                       user?.notifications.filter(
@@ -397,7 +397,7 @@ const Navbar = () => {
                     }
                   </Badge>
                 )}
-                <Bell />
+                <Bell className="text-white" />
               </Button>
             </li>
           </ul>

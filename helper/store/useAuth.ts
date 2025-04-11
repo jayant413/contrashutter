@@ -9,6 +9,7 @@ interface AuthState {
   isLoggedIn: boolean;
   loading: boolean;
   error: string | null;
+  isApproved: boolean;
   login: (email: string, password: string, role: string) => Promise<boolean>;
   checkLogin: () => Promise<boolean>;
   logout: () => Promise<void>; // Changed to Promise<void> for consistency
@@ -20,6 +21,7 @@ interface AuthState {
     notification: UserType["notifications"],
     receiverId?: string
   ) => Promise<boolean>;
+  checkUserApproval: (user: UserType) => boolean;
 }
 
 const useAuth = create<AuthState>((set, get) => ({
@@ -27,6 +29,7 @@ const useAuth = create<AuthState>((set, get) => ({
   isLoggedIn: false,
   loading: false,
   error: null,
+  isApproved: false,
 
   login: async (email, password, role) => {
     set({ loading: true, error: null });
@@ -43,7 +46,9 @@ const useAuth = create<AuthState>((set, get) => ({
           withCredentials: true,
         }
       );
-      set({ user: data.user, isLoggedIn: true, loading: false });
+      const user = data.user;
+      const isApproved = get().checkUserApproval(user);
+      set({ user, isLoggedIn: true, loading: false, isApproved });
       toast.success("Login successful");
       return true;
     } catch (error) {
@@ -55,6 +60,7 @@ const useAuth = create<AuthState>((set, get) => ({
         isLoggedIn: false,
         error: "Login failed",
         loading: false,
+        isApproved: false,
       });
       return false;
     }
@@ -67,14 +73,22 @@ const useAuth = create<AuthState>((set, get) => ({
         withCredentials: true,
       });
       if (data.isLoggedIn) {
-        set({ user: data.user, isLoggedIn: data.isLoggedIn, error: null });
+        const user = data.user;
+        const isApproved = get().checkUserApproval(user);
+        set({ user, isLoggedIn: data.isLoggedIn, error: null, isApproved });
         return true;
       } else {
-        set({ user: null, isLoggedIn: false, error: null });
+        set({ user: null, isLoggedIn: false, error: null, isApproved: false });
         return false;
       }
     } catch {
-      set({ user: null, isLoggedIn: false, error: null, loading: false });
+      set({
+        user: null,
+        isLoggedIn: false,
+        error: null,
+        loading: false,
+        isApproved: false,
+      });
       return false;
     }
   },
@@ -86,7 +100,7 @@ const useAuth = create<AuthState>((set, get) => ({
       });
       if (status === 200) {
         toast.success("Logout successful");
-        set({ user: null, isLoggedIn: false });
+        set({ user: null, isLoggedIn: false, isApproved: false });
       }
     } catch {
       toast.error("Logout failed"); // Added error handling for logout
@@ -191,6 +205,22 @@ const useAuth = create<AuthState>((set, get) => ({
       }
       return false;
     }
+  },
+
+  checkUserApproval: (user: UserType) => {
+    if (!user) return false;
+
+    // Check if all required fields are filled
+    // Excluding notifications, wishlist, partnerId, and profileImage as specified
+    return !!(
+      user.fullname &&
+      user.contact &&
+      user.email &&
+      user.role &&
+      user.aadharCard &&
+      user.panCard &&
+      user.address
+    );
   },
 }));
 

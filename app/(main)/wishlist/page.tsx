@@ -26,7 +26,7 @@ import SectionTitle from "@/components/custom/SectionTitle";
 const WhishList = () => {
   const router = useRouter();
   const [packages, setPackages] = useState<PackageType[] | null>(null);
-  const { user, removeFromWishlist } = Store.useAuth();
+  const { user, removeFromWishlist, isApproved } = Store.useAuth();
   const { allServices } = Store.useService();
 
   useEffect(() => {
@@ -138,9 +138,18 @@ const WhishList = () => {
                     Get Quotation
                   </Button>
                   <Link
-                    href={!user ? "/login" : `/package/${pkg._id}/booking`}
+                    href={
+                      !user
+                        ? "/login"
+                        : isApproved
+                        ? `/package/${pkg._id}/booking`
+                        : "/profile"
+                    }
                     className="w-full flex justify-end"
                     onClick={() => {
+                      if (!isApproved) {
+                        toast.error("Please complete your profile to book");
+                      }
                       if (!user) {
                         toast.error("Please login to book");
                       }

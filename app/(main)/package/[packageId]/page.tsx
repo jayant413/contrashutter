@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import Store from "@/helper/store";
-import PackageDetails from "@/components/pages/package/package-details";
+import PackageDetails from "@/components/pages/package/PackageDetails";
 
 const PackageDetailsPage = () => {
   const { packageId } = useParams();

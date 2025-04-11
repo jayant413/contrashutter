@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { z } from "zod"; // Import zod for schema validation
-import { BasicInfo } from "./basic-info";
+// import { BasicInfo } from "./basic-info";
 import { FormDetails } from "./form-details";
 import { PaymentDetails } from "./payment-details";
 import { EventDetails } from "./event-details";
@@ -14,26 +14,20 @@ import { DeliveryAddress } from "./delivery-address";
 import { apiEndpoint } from "@/helper/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import SectionTitle from "../custom/SectionTitle";
 import { RazorpayOrderIdType } from "@/types";
 import Store from "@/helper/store";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { CheckCircle2, CircleX } from "lucide-react"; // For the checkmark icon
 
 // Define Zod schema for form validation
 const BookingSchema = z.object({
-  basic_info: z.object({
-    fullName: z.string().optional(),
-    gender: z.string().optional(),
-    dateOfBirth: z.string().optional(),
-    email: z.string().optional(),
-    phoneNumber: z.string().optional(),
-    alternatePhoneNumber: z.string().optional(),
-    addressLine1: z.string().optional(),
-    addressLine2: z.string().optional(),
-    city: z.string().optional(),
-    state: z.string().optional(),
-    pincode: z.string().optional(),
-  }),
   form_details: z.record(z.any()),
   event_details: z.object({
     eventName: z.string().optional(),
@@ -67,18 +61,6 @@ const BookingSchema = z.object({
   }),
 });
 const BookingDefaultValues = {
-  basic_info: {
-    fullName: "John Doe",
-    gender: "Not Specified",
-    email: "example@example.com",
-    phoneNumber: "1234567890",
-    alternatePhoneNumber: "0987654321",
-    addressLine1: "123 Main St",
-    addressLine2: "Apt 4B",
-    city: "Sample City",
-    state: "Sample State",
-    pincode: "123456",
-  },
   form_details: {},
   event_details: {
     eventName: "Sample Event",
@@ -117,6 +99,8 @@ export type BookingFormType = z.infer<typeof BookingSchema>;
 export function BookingForm() {
   const [formFields, setFormFields] = useState([]);
   const [formTitle, setFormTitle] = useState("");
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [showFailureDialog, setShowFailureDialog] = useState(false); // New state for failure dialog
 
   const router = useRouter();
   const [paying, startPayment] = useTransition();
@@ -177,6 +161,10 @@ export function BookingForm() {
 
     const payload = {
       ...values,
+      form_details: {
+        ...values.form_details,
+        title: formTitle,
+      },
       package_details: {
         ...activePackage,
         eventName: activeEvent?.eventName,
@@ -198,7 +186,7 @@ export function BookingForm() {
         const { data } = await axios.post(
           `${apiEndpoint}/payment/create-order`,
           {
-            amount: installmentAmount * 100, // Convert to paisa
+            amount: installmentAmount * 100, // Convert to rupees
             currency: "INR",
             receipt: activePackage._id,
           }
@@ -220,6 +208,12 @@ export function BookingForm() {
             installmentType === 1 ? "Full" : "Installment 1/" + installmentType
           })`,
           order_id: data.id,
+          modal: {
+            ondismiss: function () {
+              // Show failure dialog instead of toast
+              setShowFailureDialog(true);
+            },
+          },
           handler: async function (response: RazorpayOrderIdType) {
             try {
               const verifyResponse = await axios.post(
@@ -228,7 +222,6 @@ export function BookingForm() {
               );
 
               if (verifyResponse.status === 200) {
-                // Add Razorpay details to payload
                 const finalPayload = {
                   ...payload,
                   payment_details: {
@@ -260,23 +253,37 @@ export function BookingForm() {
                 };
                 await addNotification([userNotification]);
 
-                toast.success("Payment Done Successfully");
-                checkLogin();
-                router.push("/");
-                setActiveService(null);
-                form.reset();
+                // Show success dialog instead of toast
+                setShowSuccessDialog(true);
+
+                // Auto close dialog and redirect after 3 seconds
+                setTimeout(() => {
+                  setShowSuccessDialog(false);
+                  checkLogin();
+                  router.push("/");
+                  setActiveService(null);
+                  form.reset();
+                }, 3000);
               } else {
-                toast.error("Payment Failed");
+                // Show failure dialog instead of toast
+                setShowFailureDialog(true);
               }
             } catch (error) {
-              toast.error("Payment Failed");
+              toast.error(
+                "Payment Processing Failed. Please try again or contact support.",
+                {
+                  duration: 5000,
+                  description:
+                    "If any amount was deducted, it will be refunded within 5-7 working days.",
+                }
+              );
               console.error(error);
             }
           },
           prefill: {
-            name: values.basic_info.fullName || user.fullname,
-            email: values.basic_info.email || user.email,
-            contact: values.basic_info.phoneNumber || "",
+            name: user.fullname,
+            email: user.email,
+            contact: user.contact,
           },
           theme: {
             color: "#3399cc",
@@ -286,8 +293,20 @@ export function BookingForm() {
         const rzp = new window.Razorpay(options);
         rzp.open();
       } catch (error) {
-        toast.error("Something went wrong, Please try again later");
-        console.error("Error submitting form:", error);
+        if (error instanceof AxiosError) {
+          toast.error(
+            error.response?.data?.message ||
+              "Failed to initiate payment. Please try again.",
+            {
+              duration: 5000,
+              description:
+                "There was an issue connecting to the payment gateway.",
+            }
+          );
+        } else {
+          toast.error("Failed to initiate payment. Please try again.");
+        }
+        console.error("Error creating payment order:", error);
       }
     });
   }
@@ -410,41 +429,69 @@ export function BookingForm() {
   }, []);
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-8 p-[3em]"
-      >
-        <SectionTitle title={`Step ${currentStep + 1} of ${steps.length}`} />
+    <>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-8 p-[3em]"
+        >
+          <SectionTitle title={`Step ${currentStep + 1} of ${steps.length}`} />
 
-        <div className="min-h-[55vh]">{steps[currentStep]}</div>
-        {currentStep === steps.length - 1 && (
-          <div className="flex justify-end">
-            <Button type="submit" disabled={paying}>
-              {paying ? "Paying..." : "Pay Now"}
-            </Button>
-          </div>
-        )}
-        <div className="flex flex-col items-center">
-          <div className="flex justify-between w-full">
-            <Button
-              type="button"
-              onClick={prevStep}
-              disabled={currentStep <= 0}
-            >
-              Back
-            </Button>
+          <div className="min-h-[55vh]">{steps[currentStep]}</div>
+          {currentStep === steps.length - 1 && (
+            <div className="flex justify-end">
+              <Button type="submit" disabled={paying}>
+                {paying ? "Paying..." : "Pay Now"}
+              </Button>
+            </div>
+          )}
+          <div className="flex flex-col items-center">
+            <div className="flex justify-between w-full">
+              <Button
+                type="button"
+                onClick={prevStep}
+                disabled={currentStep <= 0}
+              >
+                Back
+              </Button>
 
-            <Button
-              type="button"
-              onClick={nextStep}
-              disabled={currentStep === steps.length - 1}
-            >
-              Next
-            </Button>
+              <Button
+                type="button"
+                onClick={nextStep}
+                disabled={currentStep === steps.length - 1}
+              >
+                Next
+              </Button>
+            </div>
           </div>
-        </div>
-      </form>
-    </Form>
+        </form>
+      </Form>
+
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader className="flex flex-col items-center gap-4">
+            <CheckCircle2 className="h-12 w-12 text-green-500" />
+            <DialogTitle className="text-xl">Success</DialogTitle>
+          </DialogHeader>
+          <div className="text-center py-4">
+            Your order successfully placed and our representative will connect
+            you shortly
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showFailureDialog} onOpenChange={setShowFailureDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader className="flex flex-col items-center gap-4">
+            <CircleX className="h-12 w-12 text-red-500" />
+            <DialogTitle className="text-xl">Failure</DialogTitle>
+          </DialogHeader>
+          <div className="text-center py-4">
+            There was an issue processing your payment. Please try again or
+            contact support.
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

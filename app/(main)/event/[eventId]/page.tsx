@@ -28,7 +28,7 @@ const PackagesPage = () => {
   const { eventId } = useParams();
   const [packages, setPackages] = useState<PackageType[] | null>(null);
 
-  const { user } = Store.useAuth();
+  const { user, isApproved } = Store.useAuth();
   const { getService } = Store.useService();
   const { activeEvent, getEvent } = Store.useEvent();
   const { addToWishlist, removeFromWishlist } = Store.useAuth();
@@ -158,9 +158,18 @@ const PackagesPage = () => {
                     <FileText className="mr-2 h-4 w-4" /> Get Quotation
                   </Button>
                   <Link
-                    href={!user ? "/login" : `/package/${pkg._id}/booking`}
+                    href={
+                      !user
+                        ? "/login"
+                        : isApproved
+                        ? `/package/${pkg._id}/booking`
+                        : "/profile"
+                    }
                     className="w-full flex justify-end"
                     onClick={() => {
+                      if (!isApproved) {
+                        toast.error("Please complete your profile to book");
+                      }
                       if (!user) {
                         toast.error("Please login to book");
                       }

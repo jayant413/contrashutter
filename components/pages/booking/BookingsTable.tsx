@@ -33,7 +33,7 @@ export default function BookingTable({
   const filteredBookings = bookings.filter(
     (booking: BookingType) =>
       booking.booking_no?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      booking.basic_info.fullName
+      booking.userId.fullname
         ?.toLowerCase()
         .includes(searchTerm.toLowerCase()) ||
       booking.status?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -74,6 +74,11 @@ export default function BookingTable({
                   <TableHead className="font-medium text-right">
                     Amount
                   </TableHead>
+                  {user?.role === "Admin" && (
+                    <TableHead className="font-medium text-right">
+                      Assigned To
+                    </TableHead>
+                  )}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -82,6 +87,7 @@ export default function BookingTable({
                     <TableRow
                       key={booking._id}
                       className="hover:bg-primaryBlue/5"
+                      onClick={() => console.log(booking.userId)}
                     >
                       <TableCell>
                         <Link
@@ -118,7 +124,7 @@ export default function BookingTable({
                           {booking.booking_no}
                         </Link>
                       </TableCell>
-                      <TableCell>{booking.basic_info.fullName}</TableCell>
+                      <TableCell>{booking.userId.fullname}</TableCell>
                       <TableCell className=" w-fit ">
                         <span
                           className={` px-2 py-1 rounded-full  text-xs font-medium ${
@@ -134,11 +140,25 @@ export default function BookingTable({
                           {booking.status}
                         </span>
                       </TableCell>
-                      <TableCell>{booking.basic_info.phoneNumber}</TableCell>
-                      <TableCell>{booking.basic_info.email}</TableCell>
+                      <TableCell>{booking.userId.contact}</TableCell>
+                      <TableCell>{booking.userId.email}</TableCell>
                       <TableCell className="text-right">
                         ₹{booking.package_details.price.toLocaleString()}
                       </TableCell>
+                      {user?.role === "Admin" && (
+                        <TableCell className="text-center">
+                          {booking.servicePartner?.name ? (
+                            <Link
+                              href={`/admin/service-partners/${booking.servicePartner?._id}`}
+                              className="text-primaryBlue hover:text-primaryOrange font-medium"
+                            >
+                              {booking.servicePartner?.name}
+                            </Link>
+                          ) : (
+                            <span className="text-gray-500">--</span>
+                          )}
+                        </TableCell>
+                      )}
                     </TableRow>
                   ))
                 ) : (

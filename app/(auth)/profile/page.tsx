@@ -89,7 +89,7 @@ export default function ProfilePage() {
   );
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { checkLogin } = Store.useAuth();
+  const { checkLogin, checkUserApproval } = Store.useAuth();
 
   // Fetch the user profile on component mount
   useEffect(() => {
@@ -226,15 +226,12 @@ export default function ProfilePage() {
       // Append all profile fields
       Object.entries(editableProfile).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
-          if (key === "address") {
-            // Combine address components into a single string
-            const combinedAddress = combineAddressComponents();
-            formData.append(key, combinedAddress);
-          } else {
-            formData.append(key, value);
-          }
+          formData.append(key, value);
         }
       });
+
+      const combinedAddress = combineAddressComponents();
+      formData.append("address", combinedAddress);
 
       // Append image if selected
       if (selectedImage) {
@@ -252,6 +249,7 @@ export default function ProfilePage() {
       }
 
       const data = await response.json();
+      checkUserApproval(data.user);
       setProfile(data.user);
       setEditableProfile(data.user);
       if (data.user.profileImage) {
@@ -361,7 +359,20 @@ export default function ProfilePage() {
             <CardContent className="pt-20 pb-8">
               <div className="flex justify-between items-start mb-6">
                 <div>
-                  <h1 className="text-3xl font-bold">{profile.fullname}</h1>
+                  {isEditing ? (
+                    <div className="space-y-2">
+                      <Label htmlFor="fullname">Full Name</Label>
+                      <Input
+                        id="fullname"
+                        name="fullname"
+                        value={editableProfile?.fullname || ""}
+                        onChange={handleInputChange}
+                        className="text-3xl font-bold"
+                      />
+                    </div>
+                  ) : (
+                    <h1 className="text-3xl font-bold">{profile.fullname}</h1>
+                  )}
                   <p className="text-gray-500 dark:text-gray-400">
                     {profile.role}
                   </p>

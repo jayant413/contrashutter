@@ -137,7 +137,7 @@ const Sidebar = () => {
               <li
                 className={`flex items-center gap-x-4 mt-[0.5em] pl-[2em] cursor-pointer p-2  ${
                   currentPath === href
-                    ? "bg-blue-900 text-orange-500"
+                    ? "bg-primaryBlue text-primaryOrange"
                     : "hover:bg-gray-200 text-neutral-600 hover:text-neutral-900 "
                 } font-semibold ${hide ? "hidden" : ""}`}
               >
@@ -164,7 +164,7 @@ const Sidebar = () => {
                 <li
                   className={`flex items-center gap-x-4 mt-[0.5em] pl-[2em] cursor-pointer p-2  ${
                     activeService?._id === service._id
-                      ? "bg-blue-900 text-orange-500"
+                      ? "bg-primaryBlue text-primaryOrange"
                       : "hover:bg-gray-200 text-neutral-600 hover:text-neutral-900 "
                   } font-semibold`}
                 >

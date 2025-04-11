@@ -18,7 +18,7 @@ const useBooking = create<BookingState>((set) => ({
       set({
         allBookings: res.data.map((booking: BookingType) => ({
           ...booking,
-          email: booking.basic_info.email,
+          email: booking.userId.email,
         })),
       });
     } catch (error) {

@@ -13,7 +13,8 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
         primaryOrange: "#ED5523",
-        primaryBlue: "#0A4557",
+        // primaryBlue: "#0A4557",
+        primaryBlue: "#042B3A",
       },
       borderRadius: {
         lg: "var(--radius)",

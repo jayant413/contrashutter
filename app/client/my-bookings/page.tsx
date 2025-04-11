@@ -24,7 +24,7 @@ export default function BookingList() {
         setBookings(
           response.data.map((booking: BookingType) => ({
             ...booking,
-            email: booking.basic_info.email,
+            email: booking.userId?.email,
           }))
         );
       } catch (err) {

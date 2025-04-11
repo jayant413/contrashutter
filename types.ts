@@ -108,6 +108,7 @@ export interface UserType {
   panCard?: string;
   address?: string;
   profileImage?: string;
+  coverImage?: string;
 }
 
 // * Razorpay Types Order Id
@@ -152,23 +153,9 @@ export interface BookingType {
     status: string;
     updatedAt: Date;
   }[];
+  form_details: Record<string, string>;
 
   invoices: InvoiceType[];
-
-  basic_info: {
-    fullName?: string;
-    gender?: string;
-    dateOfBirth?: Date;
-    email?: string;
-    phoneNumber?: string;
-    alternatePhoneNumber?: string;
-    addressLine1?: string;
-    addressLine2?: string;
-    city?: string;
-    state?: string;
-    pincode?: string;
-  };
-
   event_details: {
     eventDate?: Date;
     eventStartTime?: string;

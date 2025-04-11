@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { List, ListPlus, Pencil } from "lucide-react";
 import Link from "next/link";
@@ -23,7 +23,6 @@ const CustomizeServicePage = ({
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     const fetchService = async () => {
@@ -95,53 +94,51 @@ const CustomizeServicePage = ({
 
   const handleSubmitEventUpdate = async () => {
     if (editingEvent) {
-      startTransition(async () => {
-        try {
-          const formData = new FormData();
-          formData.append("eventName", editedEventName);
-          formData.append("description", editedDescription);
-          if (image) {
-            formData.append("image", image);
-          }
-
-          const res = await axios.put(
-            `${apiEndpoint}/events/${editingEvent._id}`,
-            formData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            }
-          );
-
-          if (res.status === 200) {
-            toast.success("Event updated successfully");
-
-            setService((prevService) => {
-              if (!prevService) return prevService;
-
-              const updatedEvents = prevService.events.map((event) =>
-                event._id === editingEvent._id
-                  ? {
-                      ...event,
-                      eventName: editedEventName,
-                      description: editedDescription,
-                      image: res.data.event.image,
-                    }
-                  : event
-              );
-              return { ...prevService, events: updatedEvents };
-            });
-
-            setEditingEvent(null);
-            setImage(null);
-            setImagePreview("");
-          }
-        } catch (error) {
-          console.error("Error updating event:", error);
-          toast.error("Failed to update event");
+      try {
+        const formData = new FormData();
+        formData.append("eventName", editedEventName);
+        formData.append("description", editedDescription);
+        if (image) {
+          formData.append("image", image);
         }
-      });
+
+        const res = await axios.put(
+          `${apiEndpoint}/events/${editingEvent._id}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        if (res.status === 200) {
+          toast.success("Event updated successfully");
+
+          setService((prevService) => {
+            if (!prevService) return prevService;
+
+            const updatedEvents = prevService.events.map((event) =>
+              event._id === editingEvent._id
+                ? {
+                    ...event,
+                    eventName: editedEventName,
+                    description: editedDescription,
+                    image: res.data.event.image,
+                  }
+                : event
+            );
+            return { ...prevService, events: updatedEvents };
+          });
+
+          setEditingEvent(null);
+          setImage(null);
+          setImagePreview("");
+        }
+      } catch (error) {
+        console.error("Error updating event:", error);
+        toast.error("Failed to update event");
+      }
     }
   };
 
@@ -266,16 +263,11 @@ const CustomizeServicePage = ({
                     }}
                     variant="outline"
                     size="sm"
-                    disabled={isPending}
                   >
                     Cancel
                   </Button>
-                  <Button
-                    onClick={handleSubmitEventUpdate}
-                    size="sm"
-                    disabled={isPending}
-                  >
-                    {isPending ? "Saving..." : "Save Changes"}
+                  <Button onClick={handleSubmitEventUpdate} size="sm">
+                    Save Changes
                   </Button>
                 </div>
               </div>
