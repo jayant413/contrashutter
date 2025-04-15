@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useTransition } from "react";
 import Image from "next/image";
 import {
   Camera,
@@ -49,6 +49,7 @@ interface UserProfile {
   panCard?: string;
   address?: string;
   profileImage?: string;
+  coverImage?: string;
 }
 
 // Define an interface for the address components
@@ -70,6 +71,14 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [selectedCoverImage, setSelectedCoverImage] = useState<File | null>(
+    null
+  );
+  const [coverImagePreview, setCoverImagePreview] = useState<string | null>(
+    null
+  );
+  const [isPending, startTransition] = useTransition();
+  const [isSaving, setIsSaving] = useState(false);
 
   // Password change states
   const [currentPassword, setCurrentPassword] = useState("");
@@ -89,6 +98,7 @@ export default function ProfilePage() {
   );
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const coverFileInputRef = useRef<HTMLInputElement>(null);
   const { checkLogin, checkUserApproval } = Store.useAuth();
 
   // Fetch the user profile on component mount
@@ -114,6 +124,10 @@ export default function ProfilePage() {
 
         if (data.user.profileImage) {
           setImagePreview(data.user.profileImage);
+        }
+
+        if (data.user.coverImage) {
+          setCoverImagePreview(data.user.coverImage);
         }
       } catch (err) {
         if (isApiError(err)) {
@@ -175,6 +189,18 @@ export default function ProfilePage() {
     }
   };
 
+  const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedCoverImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCoverImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handlePasswordChange = async () => {
     if (newPassword !== confirmPassword) {
       toast.error("New password and confirm password must match");
@@ -219,6 +245,7 @@ export default function ProfilePage() {
 
   const handleSaveProfile = async () => {
     if (!editableProfile) return;
+    setIsSaving(true);
 
     try {
       const formData = new FormData();
@@ -238,6 +265,11 @@ export default function ProfilePage() {
         formData.append("profileImage", selectedImage);
       }
 
+      // Append cover image if selected
+      if (selectedCoverImage) {
+        formData.append("coverImage", selectedCoverImage);
+      }
+
       const response = await fetch(`${apiEndpoint}/user/updateProfile`, {
         method: "POST",
         credentials: "include",
@@ -249,20 +281,28 @@ export default function ProfilePage() {
       }
 
       const data = await response.json();
-      checkUserApproval(data.user);
-      setProfile(data.user);
-      setEditableProfile(data.user);
-      if (data.user.profileImage) {
-        setImagePreview(data.user.profileImage);
+
+      startTransition(() => {
+        checkUserApproval(data.user);
+        setProfile(data.user);
+        setEditableProfile(data.user);
+        if (data.user.profileImage) {
+          setImagePreview(data.user.profileImage);
+        }
+        if (data.user.coverImage) {
+          setCoverImagePreview(data.user.coverImage);
+        }
         checkLogin();
-      }
-      setIsEditing(false);
-      toast.success("Profile updated successfully!");
+        setIsEditing(false);
+        toast.success("Profile updated successfully!");
+      });
     } catch (err) {
       if (isApiError(err)) {
         setError(err.message);
         toast.error(err.message);
       }
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -273,14 +313,22 @@ export default function ProfilePage() {
       setAddressComponents(addressParts);
     }
     setSelectedImage(null);
+    setSelectedCoverImage(null);
     if (profile?.profileImage) {
       setImagePreview(profile.profileImage);
+    }
+    if (profile?.coverImage) {
+      setCoverImagePreview(profile.coverImage);
     }
     setIsEditing(false);
   };
 
   const handleImageClick = () => {
     fileInputRef.current?.click();
+  };
+
+  const handleCoverImageClick = () => {
+    coverFileInputRef.current?.click();
   };
 
   if (loading) {
@@ -319,7 +367,49 @@ export default function ProfilePage() {
         <TabsContent value="profile">
           <Card>
             <CardHeader className="relative p-0">
-              <div className="h-48 bg-gradient-to-r from-primaryBlue to-primaryBlue/80 rounded-t-lg"></div>
+              {coverImagePreview ? (
+                <div className="relative h-48">
+                  <Image
+                    src={coverImagePreview}
+                    alt="Cover"
+                    fill
+                    className="object-cover rounded-t-lg"
+                  />
+                  {isEditing && (
+                    <button
+                      onClick={handleCoverImageClick}
+                      className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-100 transition-opacity"
+                    >
+                      <Camera className="h-8 w-8 text-white" />
+                    </button>
+                  )}
+                  <input
+                    type="file"
+                    ref={coverFileInputRef}
+                    onChange={handleCoverImageChange}
+                    className="hidden"
+                    accept="image/*"
+                  />
+                </div>
+              ) : (
+                <div className="h-48 bg-gradient-to-r from-primaryBlue to-primaryBlue/80 rounded-t-lg">
+                  {isEditing && (
+                    <button
+                      onClick={handleCoverImageClick}
+                      className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-100 transition-opacity"
+                    >
+                      <Camera className="h-8 w-8 text-white" />
+                    </button>
+                  )}
+                  <input
+                    type="file"
+                    ref={coverFileInputRef}
+                    onChange={handleCoverImageChange}
+                    className="hidden"
+                    accept="image/*"
+                  />
+                </div>
+              )}
               <div className="absolute -bottom-16 left-8 border shadow-md border-gray-500 dark:border-gray-800 rounded-full overflow-hidden">
                 <div className="relative w-32 h-32 bg-gray-200 rounded-full">
                   {imagePreview ? (
@@ -340,7 +430,7 @@ export default function ProfilePage() {
                   {isEditing && (
                     <button
                       onClick={handleImageClick}
-                      className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition-opacity"
+                      className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-100 transition-opacity"
                     >
                       <Camera className="h-8 w-8 text-white" />
                     </button>
@@ -382,9 +472,19 @@ export default function ProfilePage() {
                     <Button
                       onClick={handleSaveProfile}
                       className="bg-primaryBlue hover:bg-primaryBlue/90"
+                      disabled={isSaving || isPending}
                     >
-                      <Save className="mr-2 h-4 w-4" />
-                      Save
+                      {isSaving || isPending ? (
+                        <>
+                          <span className="mr-2">Saving...</span>
+                          <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                        </>
+                      ) : (
+                        <>
+                          <Save className="mr-2 h-4 w-4" />
+                          Save
+                        </>
+                      )}
                     </Button>
                     <Button variant="outline" onClick={handleCancel}>
                       <X className="mr-2 h-4 w-4" />

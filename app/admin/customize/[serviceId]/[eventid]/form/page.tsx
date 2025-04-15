@@ -27,37 +27,9 @@ interface FormField {
   options?: string[];
 }
 
-// Pre-filled data for fields
-const initialFields: FormField[] = [
-  {
-    name: "firstName",
-    label: "First Name",
-    type: "text",
-    required: true,
-    component: "input",
-    options: [],
-  },
-  {
-    name: "lastName",
-    label: "Last Name",
-    type: "text",
-    required: true,
-    component: "input",
-    options: [],
-  },
-  {
-    name: "gender",
-    label: "Gender",
-    type: "text",
-    required: false,
-    component: "select",
-    options: ["Male", "Female", "Other"],
-  },
-];
-
 const EventForm = () => {
   const params = useParams();
-  const [fields, setFields] = useState<FormField[]>(initialFields);
+  const [fields, setFields] = useState<FormField[]>([]);
   const [formTitle, setFormTitle] = useState("");
   const [newOption, setNewOption] = useState("");
   const router = useRouter();
@@ -198,6 +170,7 @@ const EventForm = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="text">Text</SelectItem>
+                      <SelectItem value="time">Time</SelectItem>
                       <SelectItem value="number">Number</SelectItem>
                       <SelectItem value="email">Email</SelectItem>
                       <SelectItem value="tel">Phone</SelectItem>

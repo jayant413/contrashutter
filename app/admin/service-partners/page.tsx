@@ -6,9 +6,8 @@ import React, { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import Store from "@/helper/store";
 import { Button } from "@/components/ui/button";
-import { DataTable } from "@/components/ui/data-table";
 import SectionTitle from "@/components/custom/SectionTitle";
-import GetServicePartnerColumns from "@/components/columns/ServicePartnerColumns";
+import ServicePartnersTable from "@/components/pages/booking/ServicePartnersTable";
 
 const ServicePartners = () => {
   const {
@@ -60,7 +59,7 @@ const ServicePartners = () => {
         ))}
       </div>
 
-      <DataTable columns={GetServicePartnerColumns()} data={getActiveData()} />
+      <ServicePartnersTable servicePartners={getActiveData()} />
     </div>
   );
 };
