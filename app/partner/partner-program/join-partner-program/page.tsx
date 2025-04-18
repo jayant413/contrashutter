@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { ArrowLeft } from "lucide-react";
 import axios from "axios";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -20,6 +20,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { apiEndpoint } from "@/helper/api";
 import Store from "@/helper/store";
 import { toast } from "sonner";
@@ -49,18 +57,18 @@ export default function ServicePartnerAgreement() {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "John Doe",
+      name: "ABC Enterprises",
       registrationNumber: "REG123456",
-      contactPerson: "Jane Smith",
+      contactPerson: "John Doe",
       contactNumber: "9876543210",
-      email: "johndoe@example.com",
-      businessAddress: "123 Business St, Cityville",
-      employees: "50",
+      email: user?.email || "abc@example.com",
+      businessAddress: "123, Business Street, City, Country",
+      employees: "10",
       experience: "5 years",
-      projects: "Project A, Project B",
-      bankName: "Example Bank",
+      projects: "12",
+      bankName: "HDFC Bank",
       accountNumber: "123456789012",
-      ifsc: "EXAM1234567",
+      ifsc: "HDFC0001234",
     },
   });
 
@@ -84,244 +92,300 @@ export default function ServicePartnerAgreement() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto mt-6 shadow-lg rounded-xl p-6 space-y-6">
-      <h1 className="text-2xl font-bold text-center">
-        Contrashutter Service Partner Program Agreement
-      </h1>
-      <p className="text-gray-600 text-center">
-        This agreement is entered into between Contrashutter Private Limited and
-        the Service Partner.
-      </p>
+    <div className="container mx-auto px-4 py-8">
+      <div className="mb-6">
+        <Button
+          variant="ghost"
+          className="flex items-center gap-2 text-primaryBlue hover:text-blue-800"
+          onClick={() => router.back()}
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Partner Program
+        </Button>
+      </div>
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          {/* Service Partner Details */}
-          <div>
-            <h2 className="text-xl font-semibold">Service Partner Details</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name of Individual/Business</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Name" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="registrationNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Business Registration Number / PAN / GST
-                    </FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Registration Number" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="contactPerson"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Contact Person</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Contact Person" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="contactNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Contact Number</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Contact Number" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email Address</FormLabel>
-                    <FormControl>
-                      <Input type="email" {...field} placeholder="Email" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="businessAddress"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Business Address</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Business Address" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </div>
+      <Card className="max-w-4xl mx-auto">
+        <CardHeader className="bg-blue-50">
+          <CardTitle className="text-2xl font-bold">
+            Contrashutter Service Partner Program Agreement
+          </CardTitle>
+          <CardDescription>
+            This agreement is entered into between Contrashutter Private Limited
+            and the Service Partner.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-6">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              {/* Service Partner Details */}
+              <div>
+                <h2 className="text-xl font-bold text-primaryBlue mb-4">
+                  Service Partner Details
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name of Individual/Business</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Name" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="registrationNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Business Registration Number / PAN / GST
+                        </FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Registration Number" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="contactPerson"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Contact Person</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Contact Person" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="contactNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Contact Number</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Contact Number" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email Address</FormLabel>
+                        <FormControl>
+                          <Input type="email" {...field} placeholder="Email" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="businessAddress"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Business Address</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Business Address" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
 
-          {/* Workforce and Infrastructure */}
-          <div>
-            <h2 className="text-xl font-semibold">
-              Workforce and Infrastructure
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
-              <FormField
-                control={form.control}
-                name="employees"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Number of Employees</FormLabel>
-                    <FormControl>
-                      <Input type="number" {...field} placeholder="Employees" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="experience"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Work Experience (Years)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        {...field}
-                        placeholder="Experience"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="projects"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Significant Projects Completed</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        placeholder="Projects"
-                        className="h-24"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </div>
+              <Separator />
 
-          {/* Banking Details */}
-          <div>
-            <h2 className="text-xl font-semibold">
-              Banking Details (For Profit Sharing)
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
-              <FormField
-                control={form.control}
-                name="bankName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Bank Name</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Bank Name" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="accountNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Account Number</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Account Number" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="ifsc"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>IFSC Code</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="IFSC Code" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </div>
+              {/* Workforce and Infrastructure */}
+              <div>
+                <h2 className="text-xl font-bold text-primaryBlue mb-4">
+                  Workforce and Infrastructure
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="employees"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Number of Employees</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Employees" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="experience"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Work Experience (Years)</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Experience" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="projects"
+                    render={({ field }) => (
+                      <FormItem className="md:col-span-2">
+                        <FormLabel>Significant Projects Completed</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            {...field}
+                            placeholder="Projects"
+                            rows={3}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
 
-          {/* Terms and Conditions Scrollable Box */}
-          <div>
-            <h2 className="text-xl font-semibold">Terms and Conditions</h2>
-            <div className="border p-4 h-30 overflow-y-scroll bg-gray-100 rounded-md text-sm flex flex-col ">
-              <strong>1. Scope of Work</strong>
-              <strong>2. Exclusivity and Non-Compete</strong>
-              <strong>3. Confidentiality</strong>
-              <strong>4. Profit Sharing and Payment</strong>
-              <strong>5. Service Quality</strong>
-              <Link
-                href="/partner/partner-program/join-partner-program/terms-conditions"
-                className="w-fit text-blue-500 hover:underline"
-              >
-                Show more...
-              </Link>
-            </div>
-          </div>
+              <Separator />
 
-          {/* Terms and Conditions Checkbox */}
-          <div className="flex items-center gap-2 mt-4">
-            <Checkbox
-              id="terms"
-              checked={isChecked}
-              onCheckedChange={(checked) => setIsChecked(!!checked)}
-            />
-            <Label htmlFor="terms">I agree to the terms and conditions</Label>
-          </div>
+              {/* Banking Details */}
+              <div>
+                <h2 className="text-xl font-bold text-primaryBlue  mb-4">
+                  Banking Details (For Profit Sharing)
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="bankName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Bank Name</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Bank Name" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="accountNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Account Number</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Account Number" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="ifsc"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>IFSC Code</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="IFSC Code" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
 
-          {/* Submit Button */}
-          <div className="mt-6 flex justify-center gap-4">
-            <Button type="submit" disabled={!isChecked || loading}>
-              {loading ? "Submitting..." : "Agree & Proceed"}
-            </Button>
-          </div>
-        </form>
-      </Form>
+              <Separator />
+
+              {/* Terms and Conditions */}
+              <div>
+                <h2 className="text-xl font-bold text-primaryBlue mb-4">
+                  Terms and Conditions
+                </h2>
+                <div className="bg-blue-50 p-4 rounded-lg mb-4">
+                  <ol className="list-decimal list-inside space-y-2 text-gray-700">
+                    <li>
+                      <strong>Scope of Work:</strong> The Service Partner agrees
+                      to provide photography, makeup, or decoration services as
+                      per the requirements specified by Contrashutter.
+                    </li>
+                    <li>
+                      <strong>Exclusivity and Non-Compete:</strong> The Service
+                      Partner agrees not to offer similar services to direct
+                      competitors of Contrashutter during the term of this
+                      agreement.
+                    </li>
+                    <li>
+                      <strong>Confidentiality:</strong> The Service Partner
+                      agrees to maintain the confidentiality of all information
+                      shared by Contrashutter.
+                    </li>
+                    <li>
+                      <strong>Profit Sharing and Payment:</strong> Contrashutter
+                      will share profits with the Service Partner as per the
+                      agreed-upon percentage for each service provided.
+                    </li>
+                    <li>
+                      <strong>Service Quality:</strong> The Service Partner
+                      agrees to maintain the highest standards of service
+                      quality as specified by Contrashutter.
+                    </li>
+                  </ol>
+                  <div className="mt-2">
+                    <Link
+                      href="/partner/partner-program/join-partner-program/terms-conditions"
+                      className="text-primaryBlue hover:underline text-sm font-medium"
+                    >
+                      View full terms and conditions
+                    </Link>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="terms"
+                    checked={isChecked}
+                    onCheckedChange={(checked) => setIsChecked(!!checked)}
+                    className="text-primaryBlue border-blue-300"
+                  />
+                  <label
+                    htmlFor="terms"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    I agree to the terms and conditions
+                  </label>
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <div className="flex justify-end">
+                <Button
+                  type="submit"
+                  disabled={!isChecked || loading}
+                  className="bg-primaryOrange hover:bg-primaryOrange/80"
+                >
+                  {loading ? "Submitting..." : "Agree & Proceed"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

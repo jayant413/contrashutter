@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { BookingFormType } from "./boooking";
+import Link from "next/link";
 
 type PaymentDetailsProps = {
   form: UseFormReturn<BookingFormType>;
@@ -110,9 +111,13 @@ export function PaymentDetails({ form }: PaymentDetailsProps) {
             <div className="space-y-1 leading-none">
               <FormLabel>
                 I have read and agree to the{" "}
-                <a href="#" className="text-primary underline">
+                <Link
+                  href="/terms-conditions"
+                  target="_blank"
+                  className="text-primary underline"
+                >
                   Terms and Conditions
-                </a>
+                </Link>
               </FormLabel>
             </div>
           </FormItem>

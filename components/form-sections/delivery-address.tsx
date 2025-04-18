@@ -7,7 +7,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
+// import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { BookingFormType } from "./boooking";
 
@@ -21,7 +21,7 @@ export function DeliveryAddress({ form }: DeliveryAddressProps) {
       <h2 className="text-2xl font-semibold">Delivery Address</h2>
 
       {/* Checkbox for Same Address */}
-      <FormField
+      {/* <FormField
         control={form.control}
         name="delivery_address.sameAsClientAddress"
         render={({ field }) => (
@@ -37,10 +37,10 @@ export function DeliveryAddress({ form }: DeliveryAddressProps) {
             </div>
           </FormItem>
         )}
-      />
+      /> */}
 
       {/* Only show the delivery fields if the checkbox is unchecked */}
-      {!form.watch("delivery_address.sameAsClientAddress") && (
+      {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <FormField
             control={form.control}
@@ -157,7 +157,7 @@ export function DeliveryAddress({ form }: DeliveryAddressProps) {
             )}
           />
         </div>
-      )}
+      }
     </div>
   );
 }

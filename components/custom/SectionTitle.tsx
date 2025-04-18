@@ -31,7 +31,7 @@ const SectionTitle: React.FC<SectionTitleProps> = ({
         <Button
           variant="ghost"
           type="button"
-          className="absolute left-0 top-[-2em] lg:top-0"
+          className="absolute left-0 top-[-2em] lg:top-0  text-primaryBlue border-b-2 rounded-none hover:border-primaryBlue hover:bg-white"
           onClick={() => (onClick ? onClick() : router.back())}
         >
           <ArrowLeft />

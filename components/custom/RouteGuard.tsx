@@ -7,7 +7,20 @@ import Store from "@/helper/store";
 
 // Constants outside component to prevent recreation
 const ROUTE_CONFIG = {
-  public: ["/about", "/contact", "/services", "/event", "/package", "/login"],
+  public: [
+    "/about",
+    "/contact",
+    "/services",
+    "/event",
+    "/package",
+    "/login",
+    "/terms-conditions",
+    "/privacy-policy",
+    "/faqs",
+    "/return-replace-policy",
+    "/service-cancellation-policy",
+    "/refund-policy",
+  ],
   roleBased: {
     admin: "/admin",
     client: "/client",

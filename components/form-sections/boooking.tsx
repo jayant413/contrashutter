@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { z } from "zod"; // Import zod for schema validation
-// import { BasicInfo } from "./basic-info";
 import { FormDetails } from "./form-details";
 import { PaymentDetails } from "./payment-details";
 import { EventDetails } from "./event-details";
@@ -15,8 +14,6 @@ import { apiEndpoint } from "@/helper/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import axios, { AxiosError } from "axios";
-import SectionTitle from "../custom/SectionTitle";
-import { RazorpayOrderIdType } from "@/types";
 import Store from "@/helper/store";
 import {
   Dialog,
@@ -24,7 +21,25 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { CheckCircle2, CircleX } from "lucide-react"; // For the checkmark icon
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  CreditCard,
+  MapPin,
+  Package,
+  User,
+  CheckCircle2,
+  CircleX,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { RazorpayOrderIdType } from "@/types";
 
 // Define Zod schema for form validation
 const BookingSchema = z.object({
@@ -87,10 +102,10 @@ const BookingDefaultValues = {
     additionalDeliveryInstructions: "Leave at the front door",
   },
   payment_details: {
-    preferredPaymentMethod: "Credit Card",
+    preferredPaymentMethod: "UPI",
     paymentType: "1",
-    agreeToTerms: true,
-    confirmBookingDetails: true,
+    agreeToTerms: false,
+    confirmBookingDetails: false,
   },
 };
 
@@ -313,20 +328,6 @@ export function BookingForm() {
 
   const [currentStep, setCurrentStep] = useState(0);
 
-  // const validateBasicInfo = () => {
-  //   const basicInfo = form.getValues("basic_info");
-  //   return (
-  //     basicInfo.fullName &&
-  //     basicInfo.gender &&
-  //     basicInfo.email &&
-  //     basicInfo.phoneNumber &&
-  //     basicInfo.addressLine1 &&
-  //     basicInfo.city &&
-  //     basicInfo.state &&
-  //     basicInfo.pincode
-  //   );
-  // };
-
   const validateFormDetails = () => {
     const formDetailsValues = form.getValues("form_details");
     return Object.keys(formDetailsValues).length === formFields.length;
@@ -362,12 +363,6 @@ export function BookingForm() {
 
   const validateCurrentStep = () => {
     switch (currentStep) {
-      // case 0:
-      //   if (!validateBasicInfo()) {
-      //     toast.error("Please fill all the required fields in Basic Info");
-      //     return false;
-      //   }
-      //   break;
       case 0:
         if (!validateFormDetails()) {
           toast.error("Please fill all the form fields");
@@ -393,7 +388,6 @@ export function BookingForm() {
   };
 
   const steps = [
-    // <BasicInfo key="basic-info" form={form} />,
     <FormDetails
       key="form-details"
       form={form}
@@ -409,6 +403,7 @@ export function BookingForm() {
     if (currentStep < steps.length - 1) {
       if (validateCurrentStep()) {
         setCurrentStep(currentStep + 1);
+        window.scrollTo(0, 0);
       }
     }
   };
@@ -416,6 +411,7 @@ export function BookingForm() {
   const prevStep = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
+      window.scrollTo(0, 0);
     }
   };
 
@@ -428,44 +424,129 @@ export function BookingForm() {
     document.body.appendChild(script);
   }, []);
 
+  const stepTitles = ["Basic Info", "Event Info", "Delivery", "Payment"];
+  const stepIcons = [
+    <User key="user" className="h-5 w-5" />,
+    <MapPin key="mappin" className="h-5 w-5" />,
+    <Package key="package" className="h-5 w-5" />,
+    <CreditCard key="creditcard" className="h-5 w-5" />,
+  ];
+
   return (
-    <>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8 p-[3em]"
-        >
-          <SectionTitle title={`Step ${currentStep + 1} of ${steps.length}`} />
-
-          <div className="min-h-[55vh]">{steps[currentStep]}</div>
-          {currentStep === steps.length - 1 && (
-            <div className="flex justify-end">
-              <Button type="submit" disabled={paying}>
-                {paying ? "Paying..." : "Pay Now"}
-              </Button>
-            </div>
-          )}
-          <div className="flex flex-col items-center">
-            <div className="flex justify-between w-full">
-              <Button
-                type="button"
-                onClick={prevStep}
-                disabled={currentStep <= 0}
-              >
-                Back
-              </Button>
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto">
+        <Card>
+          <CardHeader className="bg-primaryBlue/5">
+            <CardTitle className="text-2xl font-bold flex justify-between">
+              <span>
+                {activePackage
+                  ? `Book ${activePackage.name || "Package"}`
+                  : "Book Package"}
+              </span>
 
               <Button
-                type="button"
-                onClick={nextStep}
-                disabled={currentStep === steps.length - 1}
+                variant="ghost"
+                className="text-primaryBlue border-b-2 rounded-none hover:border-primaryBlue"
+                onClick={() => router.back()}
               >
-                Next
+                <ArrowLeft className="h-4 w-4" />
+                Go Back
               </Button>
+            </CardTitle>
+            <CardDescription>
+              Complete the booking process to secure your package
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-6">
+            {/* Progress Steps */}
+            <div className="mb-8">
+              <div className="flex justify-between">
+                {stepTitles.map((title, index) => (
+                  <>
+                    <div
+                      key={`step-${index}`}
+                      className={`flex flex-col items-center ${
+                        currentStep >= index
+                          ? "text-primaryBlue"
+                          : "text-gray-400"
+                      }`}
+                    >
+                      <div
+                        className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${
+                          currentStep >= index
+                            ? "bg-primaryBlue text-white"
+                            : "bg-gray-200 text-gray-500"
+                        }`}
+                      >
+                        {currentStep > index ? (
+                          <Check className="h-5 w-5" />
+                        ) : (
+                          stepIcons[index]
+                        )}
+                      </div>
+                      <span className="text-sm">{title}</span>
+                    </div>
+                    {index < stepTitles.length - 1 && (
+                      <div className="flex-1 flex items-center">
+                        <div
+                          className={`h-1 w-full ${
+                            currentStep > index
+                              ? "bg-primaryBlue"
+                              : "bg-gray-200"
+                          }`}
+                        ></div>
+                      </div>
+                    )}
+                  </>
+                ))}
+              </div>
             </div>
-          </div>
-        </form>
-      </Form>
+
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6"
+              >
+                <div className="min-h-[55vh]">{steps[currentStep]}</div>
+
+                <div className="flex justify-between mt-8">
+                  {currentStep > 0 ? (
+                    <Button type="button" variant="outline" onClick={prevStep}>
+                      <ArrowLeft className="mr-2 h-4 w-4" />
+                      Previous
+                    </Button>
+                  ) : (
+                    <div></div>
+                  )}
+
+                  {currentStep < steps.length - 1 ? (
+                    <Button
+                      type="button"
+                      className="bg-primaryBlue hover:bg-primaryBlue/90"
+                      onClick={nextStep}
+                    >
+                      Next
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  ) : (
+                    <Button
+                      type="submit"
+                      className="bg-primaryOrange hover:bg-primaryOrange/90"
+                      disabled={
+                        paying ||
+                        !form.getValues("payment_details.agreeToTerms") ||
+                        !form.getValues("payment_details.confirmBookingDetails")
+                      }
+                    >
+                      {paying ? "Processing..." : "Complete Booking"}
+                    </Button>
+                  )}
+                </div>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      </div>
 
       <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
         <DialogContent className="sm:max-w-md">
@@ -492,6 +573,6 @@ export function BookingForm() {
           </div>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 }

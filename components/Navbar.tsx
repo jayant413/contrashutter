@@ -50,7 +50,6 @@ const Navbar = () => {
   const { setActiveService } = Store.useService();
   const { onToggleSidebar, setIsShowSidebar } = Store.useMain(); // Extracted onToggleSidebar
   const [isSheetOpen, setSheetOpen] = useState(false); // State to manage sheet visibility
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     checkLogin();
@@ -163,16 +162,6 @@ const Navbar = () => {
 
       {/* Right side navigation */}
       <div className="relative flex items-center">
-        {/* Mobile Menu Button */}
-        <Button
-          variant="ghost"
-          className="p-2 hidden"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label="Toggle menu"
-        >
-          <FiMenu size={20} />
-        </Button>
-
         {/* Desktop Navigation - All items */}
         <div className="hidden md:flex items-center space-x-3">
           <Link href="/" onClick={() => setActiveService(null)}>
@@ -227,52 +216,6 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Mobile Menu Dropdown */}
-        {mobileMenuOpen && (
-          <div className="absolute right-0 top-12 w-56 bg-white rounded-lg shadow-lg py-2 md:hidden z-50">
-            <div className="flex flex-col">
-              <Link
-                href="/"
-                onClick={() => {
-                  setActiveService(null);
-                  setMobileMenuOpen(false);
-                }}
-              >
-                <Button variant="ghost" className="w-full justify-start">
-                  Home
-                </Button>
-              </Link>
-              <Link
-                href="/about"
-                onClick={() => {
-                  setActiveService(null);
-                  setMobileMenuOpen(false);
-                }}
-              >
-                <Button variant="ghost" className="w-full justify-start">
-                  About Us
-                </Button>
-              </Link>
-              <Link
-                href="/contact"
-                onClick={() => {
-                  setActiveService(null);
-                  setMobileMenuOpen(false);
-                }}
-              >
-                <Button variant="ghost" className="w-full justify-start">
-                  Contact
-                </Button>
-              </Link>
-
-              <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
-                <Button variant="ghost" className="w-full justify-start">
-                  Sign In
-                </Button>
-              </Link>
-            </div>
-          </div>
-        )}
         {/* User Links */}
         {user ? (
           <ul className="flex items-center space-x-3 text-gray-600">
@@ -402,9 +345,9 @@ const Navbar = () => {
             </li>
           </ul>
         ) : (
-          <Menubar className="border-none md:hidden">
+          <Menubar className=" md:hidden rounded-none shadow-none border-b pb-2 focus:bg-transparent bg-[#042B3A] text-white border-x-0 border-t-0">
             <MenubarMenu>
-              <MenubarTrigger className="space-x-3 border">
+              <MenubarTrigger className="space-x-3 focus:bg-transparent  focus:text-white ">
                 <span className="flex items-center">
                   {pathname === "/" ? (
                     <>
